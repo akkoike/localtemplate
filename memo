@@ -1,0 +1,16 @@
+- Login
+az login
+
+- Subscription
+az account list --output table
+az account set --subscription 'Microsoft Azure 社内従量課金プラン'
+
+- Resource Group
+az group list --output table
+az group create --name test-template-rg --location japaneast
+az group delete --name test-template-rg
+
+- Template
+az deployment group validate --resource-group test-template-rg --template-file ubun.json
+az deployment group create --resource-group test-template-rg --template-file ubun.json
+

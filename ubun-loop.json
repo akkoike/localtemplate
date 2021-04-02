@@ -1,0 +1,373 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "loginUser": {
+            "defaultValue": "azure01",
+            "type": "string",
+            "metadata": {
+                "description": "User name for the Virtual Machine."
+            }
+        },
+        "sshKeyData": {
+            "type": "string",
+            "defaultValue": "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAvjm5HExrK2RfT3nATIvB6oYppSR7Yyjoq53iRDuxRHL+zB5E6xDKl/L8Z7r4pOvqJK0oaIPiF878zVsyB/J7stL4+5fKKdgm96bydg+kMbqNVFsxiwWjAAHJeqTHz+ojyJcWA6dkP/3OVW0+0wdKHMeLGNgvRJrUkzdThz4l4serEJ/t7iIdx3Rb+zzameOGgtRYI6/jLfoJO1g3Qd4Ff3peC7N20bA3CywyW0pBMxMoYz4WGkeDlweIgBplzcOFf9Dak2noN3+xouu3SH4K+cf/xPrEX7xYcdyYZR7FqUPPafHbdFUG/KhfM8d3kmSptjdGOWKJUK3CFNV1/FfQGw==",
+            "metadata": {
+                "description": "SSH rsa public key file as a string , ex.(ssh-rsa AA----nFnJ)"
+            }
+        },
+        "numberOfInstances": {
+            "type": "int",
+            "defaultValue": 2,
+            "minValue": 2,
+            "maxValue": 6,
+            "metadata": {
+                "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
+            }
+        },
+        "virtualMachines_name": {
+            "defaultValue": "ubunkoike00",
+            "type": "string",
+            "metadata": {
+                "description": "VM Name"
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_D2_v2",
+            "allowedValues": [
+                "Standard_A1",
+                "Standard_A2",
+                "Standard_D1",
+                "Standard_D2",
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_DS1",
+                "Standard_DS2",
+                "Standard_DS1_v2",
+                "Standard_DS2_v2",
+                "Standard_DS4_v2",
+                "Standard_F1",
+                "Standard_F2",
+                "Standard_F1s",
+                "Standard_F2s"
+                
+            ],
+            "metadata": {
+                "description": "Size of the Virtual Machine."
+            }
+        },
+        "osVersion": {
+            "type": "string",
+            "defaultValue": "18.04-LTS",
+            "allowedValues": [
+                "16.04-LTS",
+                "18.04-LTS"
+            ],
+            "metadata": {
+                "description": "OS Version of Ubuntu."
+            }
+        },
+        "availabilitySets_name": {
+            "defaultValue": "ubunkoike00-avail",
+            "type": "string",
+            "metadata": {
+                "description": "Availability Set Name"
+            }
+        },
+        "storageRedundancy": {
+            "defaultValue": "Standard_LRS",
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS"
+            ],
+            "metadata": {
+                "description": "Availability Set Name"
+            }
+        },
+        "networkSecurityGroups_name": {
+            "defaultValue": "ubunkoike00-nsg",
+            "type": "string",
+            "metadata": {
+                "description": "NSG Name"
+            }
+        },
+        "virtualNetworks_name": {
+            "defaultValue": "cent-vnet",
+            "type": "string",
+            "metadata": {
+                "description": "vNet Name"
+            }
+        },
+        "vnetAddressPrefix": {
+            "defaultValue": "192.168.0.0/16",
+            "type": "string",
+            "metadata": {
+                "description": "vNet address"
+            }
+        },
+        "subnetAddressPrefix": {
+            "defaultValue": "192.168.0.0/24",
+            "type": "string",
+            "metadata": {
+                "description": "Subnet address , need to include vNet address"
+            }
+        },
+        "script_urls": {
+            "defaultValue": "https://raw.githubusercontent.com/akkoike/ARMtemplate/master/parts/VirtualMachine/script.sh",
+            "type": "string",
+            "metadata": {
+                "description": "Url arranged custom script-file , ex. (https://raw.githubusercontent.com/---/---.sh)"
+            }
+        },
+        "script_name": {
+            "defaultValue": "script.sh",
+            "type": "string",
+            "metadata": {
+                "description": "Only Script Name , ex. (---.sh)"
+            }
+        }
+
+    },
+    "variables": {
+        "networkInterfaces_name": "[concat(parameters('virtualMachines_name'),'00')]",
+        "publicIPAddresses_name": "[concat(parameters('virtualMachines_name'),'-pip')]",
+	"storageAccounts_name": "[concat('stor',uniqueString(resourceGroup().id))]",
+        "extensions_name": "sampleextension"
+    },
+    "resources": [
+        {
+            "comments": "リソース '/subscriptions//resourceGroups/cent-rg/providers/Microsoft.Compute/availabilitySets/centostest01-avail' から一般化されました。",
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('availabilitySets_name')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformUpdateDomainCount": 5,
+                "platformFaultDomainCount": 3
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "リソース '/subscriptions//resourceGroups/cent-rg/providers/Microsoft.Compute/virtualMachines/centostest01' から一般化されました。",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[concat(parameters('virtualMachines_name'),copyIndex(1))]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "virtualMachineLoop",
+                "count": "[parameters('numberOfInstances')]"
+            },
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySets_name'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "[parameters('osVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[parameters('virtualMachines_name')]",
+                        "createOption": "FromImage",
+                        "vhd": {
+                            "uri": "[concat('https', '://', variables('storageAccounts_name'),copyIndex(1), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),copyIndex(1),'_',uniqueString(resourceGroup().id),'.vhd'))]"
+                        },
+                        "caching": "ReadWrite"
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('virtualMachines_name'),copyIndex(1))]",
+                    "adminUsername": "[parameters('loginUser')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "[concat('/home/', parameters('loginUser'), '/.ssh/authorized_keys')]",
+                                    "keyData": "[parameters('sshKeyData')]"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('networkInterfaces_name'),copyIndex(1)))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySets_name'))]",
+                "[concat(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccounts_name')),copyIndex(1))]",
+                "[concat(resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaces_name')),copyIndex(1))]"
+            ]
+        },
+        {
+            "comments": "リソース '/subscriptions//resourceGroups/cent-rg/providers/Microsoft.Network/networkInterfaces/centostest0196' から一般化されました。",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[concat(variables('networkInterfaces_name'),copyIndex(1))]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "nicLoop",
+                "count": "[parameters('numberOfInstances')]"
+              },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('publicIPAddresses_name'),copyIndex(1)))]"
+                            },
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_name')), '/subnets/SUBNET01')]"
+                            }
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": []
+                },
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_name'))]"
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[concat(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddresses_name')),copyIndex(1))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_name'))]"
+            ]
+        },
+        {
+            "comments": "リソース '/subscriptions//resourceGroups/cent-rg/providers/Microsoft.Network/networkSecurityGroups/centostest01-nsg' から一般化されました。",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('networkSecurityGroups_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-ssh",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "リソース '/subscriptions//resourceGroups/cent-rg/providers/Microsoft.Network/publicIPAddresses/centostest01-ip' から一般化されました。",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[concat(variables('publicIPAddresses_name'),copyIndex(1))]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "publicIPLoop",
+                "count": "[parameters('numberOfInstances')]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "リソース '/subscriptions//resourceGroups/cent-rg/providers/Microsoft.Network/virtualNetworks/cent-vnet' から一般化されました。",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_name')]",
+            "apiVersion": "2016-03-30",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "SUBNET01",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetAddressPrefix')]"
+                        }
+                    }
+                ]
+            },
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "リソース '/subscriptions//resourceGroups/cent-rg/providers/Microsoft.Storage/storageAccounts/centosstor01' から一般化されました。",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "[parameters('storageRedundancy')]",
+                "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[concat(variables('storageAccounts_name'),copyIndex(1))]",
+            "apiVersion": "2016-01-01",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "storageLoop",
+                "count": "[parameters('numberOfInstances')]"
+            },
+            "tags": {},
+            "properties": {},
+            "resources": [],
+            "dependsOn": []
+        },
+        {
+            "comments": "リソース '/subscriptions//resourceGroups/cent-rg/providers/Microsoft.Compute/virtualMachines/centostest01/extensions/CustomScriptForLinux' から一般化されました。",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(parameters('virtualmachines_name'),copyIndex(1),'/', variables('extensions_name'))]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "extensionLoop",
+                "count": "[parameters('numberOfInstances')]"
+            },
+            "properties": {
+                "publisher": "Microsoft.OSTCExtensions",
+                "type": "CustomScriptForLinux",
+                "typeHandlerVersion": "1.4",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "[parameters('script_urls')]"
+                    ],
+                "commandToExecute": "[concat('sh ',parameters('script_name'))]"
+                }
+            },
+            "resources": [],
+            "dependsOn": [
+                "[concat(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_name')),copyIndex(1))]"
+            ]
+        }
+    ]
+}
