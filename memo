@@ -13,4 +13,4 @@ az group delete --name test-template-rg
 - Template
 az deployment group validate --resource-group test-template-rg --template-file ubun.json
 az deployment group create --resource-group test-template-rg --template-file ubun.json
-
+az deployment group create --resource-group template-demo-rg --template-uri "https://raw.githubusercontent.com/akkoike/localtemplate/master/ubun.json"
