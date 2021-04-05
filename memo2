@@ -1,0 +1,8 @@
+git init
+git clone https//::::::
+
+git add *
+git commit -m "commit by akkoike"
+git push origin master
+
+
