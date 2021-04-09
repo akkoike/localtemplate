@@ -26,7 +26,7 @@
             }
         },
         "virtualMachines_name": {
-            "defaultValue": "ubunkoike00",
+            "defaultValue": "ubunkoike101",
             "type": "string",
             "metadata": {
                 "description": "VM Name"
@@ -69,7 +69,7 @@
             }
         },
         "availabilitySets_name": {
-            "defaultValue": "ubunkoike00-avail",
+            "defaultValue": "ubunkoike01-avail",
             "type": "string",
             "metadata": {
                 "description": "Availability Set Name"
@@ -88,7 +88,7 @@
             }
         },
         "networkSecurityGroups_name": {
-            "defaultValue": "ubunkoike00-nsg",
+            "defaultValue": "ubunkoike01-nsg",
             "type": "string",
             "metadata": {
                 "description": "NSG Name"
