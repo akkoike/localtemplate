@@ -6,7 +6,7 @@
             "defaultValue": "azure01",
             "type": "string",
             "metadata": {
-                "description": "User name for the Virtual Machine aaafuga"
+                "description": "User name for the Virtual Machine fuga"
             }
         },
         "sshKeyData": {
