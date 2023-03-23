@@ -1,6 +1,12 @@
 param location string
 param logAnalyticsWorkspaceName string
-
+// Tag valiables
+var TAG_VALUE = {
+CostCenterNumber: '10181378'
+CreateDate: '2023/03/23'
+Location: 'japaneast'
+Owner: 'akkoike'
+}
 // Hub vNET/Subnet valiables
 var VNET_HUB_NAME = 'vnet-poc-hub-stag-001'
 var VNET_HUB_ADDRESS_SPACE = '192.168.0.0/16'
@@ -47,6 +53,7 @@ var customRules = [
   }
 ]
 */
+// NSG CustomRules variables for DNS Server Subnet on hub vNET
 var nsghubcustomRules = [
   {
     name: 'Allow_DNS_Inbound_TCP'
@@ -87,6 +94,7 @@ resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces
 resource hubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
   name: VNET_HUB_NAME
   location: location
+  tags: TAG_VALUE
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -160,6 +168,7 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
 resource spokeVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
   name: VNET_SPOKE_NAME
   location: location
+  tags: TAG_VALUE
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -277,6 +286,7 @@ resource vnetpeeringspoke 'Microsoft.Network/virtualNetworks/virtualNetworkPeeri
 resource nsginboundhub 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
   name: NSG_HUB_INBOUND_NAME
   location: location
+  tags: TAG_VALUE
   properties: {
     //securityRules: NSG_DEFAULT_RULES
     securityRules: concat(NSG_DEFAULT_RULES, nsghubcustomRules)
@@ -287,11 +297,11 @@ resource nsginboundhub 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
 resource nsginboundspoke 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
   name: NSG_SPOKE_INBOUND_NAME
   location: location
+  tags: TAG_VALUE
   properties: {
     securityRules: NSG_DEFAULT_RULES
     //securityRules: concat(NSG_DEFAULT_RULES, customRules)
   }
 }
 
-
-//output OUTPUT_LAW_RESOURCE_ID string = existingloganalyticsworkspace.id
+output OUTPUT_HUB_VNET_NAME string = VNET_HUB_NAME

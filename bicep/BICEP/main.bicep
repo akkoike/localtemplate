@@ -1,4 +1,4 @@
-//param location string = 'japaneast'
+// Global variables
 param location string = resourceGroup().location
 
 // Log Analytics Workspace module
@@ -18,5 +18,18 @@ module vnetmodule 'Modules/vnet.bicep' = {
   }
   dependsOn: [
     loganalyticsmodule
+  ]
+}
+
+// Azure Firewall module
+module azfwmodule 'Modules/azfw.bicep' = {
+  name: 'azfw-modulename'
+  params: {
+    location: location
+    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
+    hubVnetName: vnetmodule.outputs.OUTPUT_HUB_VNET_NAME
+  }
+  dependsOn: [
+    vnetmodule
   ]
 }
