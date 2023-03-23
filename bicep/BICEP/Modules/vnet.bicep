@@ -54,7 +54,7 @@ var customRules = [
 ]
 */
 // NSG CustomRules variables for DNS Server Subnet on hub vNET
-var nsghubcustomRules = [
+var NSG_HUB_CUSTOM_RULES = [
   {
     name: 'Allow_DNS_Inbound_TCP'
     properties: {
@@ -289,7 +289,7 @@ resource nsginboundhub 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
   tags: TAG_VALUE
   properties: {
     //securityRules: NSG_DEFAULT_RULES
-    securityRules: concat(NSG_DEFAULT_RULES, nsghubcustomRules)
+    securityRules: concat(NSG_DEFAULT_RULES, NSG_HUB_CUSTOM_RULES)
   }
 }
 
@@ -305,3 +305,4 @@ resource nsginboundspoke 'Microsoft.Network/networkSecurityGroups@2021-08-01' = 
 }
 
 output OUTPUT_HUB_VNET_NAME string = VNET_HUB_NAME
+output OUTPUT_SPOKE_VNET_NAME string = VNET_SPOKE_NAME

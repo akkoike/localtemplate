@@ -1,0 +1,466 @@
+{
+    "rules": [
+        {
+            "name": "aadcdn.microsoftonline-p.com",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.aadcdn.microsoftonline-p.com"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "aka.ms",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.aka.ms"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "applicationinsights.io",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.applicationinsights.io"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "azure.com",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.azure.com"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "azure.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.azure.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "azurefd.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.azurefd.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "azure-api.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.azure-api.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "azuredatalakestore.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.azuredatalakestore.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "azureedge.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.azureedge.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "loganalytics.io",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.loganalytics.io"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "microsoft.com",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.microsoft.com"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "microsoftonline.com",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.microsoftonline.com"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "microsoftonline-p.com",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.microsoftonline-p.com"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "msauth.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.msauth.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "msftauth.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.msftauth.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "trafficmanager.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.trafficmanager.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "visualstudio.com",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.visualstudio.com"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "windows.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.windows.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "windows-int.net",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.windows-int.net"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "live.com",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.live.com"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        },
+        {
+            "name": "azurecr.io",
+            "protocols": [
+                {
+                    "protocolType": "Http",
+                    "port": 80
+                },
+                {
+                    "protocolType": "Https",
+                    "port": 443
+                }
+            ],
+            "fqdnTags": [],
+            "targetFqdns": [
+                "*.azurecr.io"
+            ],
+            "sourceAddresses": [
+                "192.168.4.0/29",
+                "172.16.0.0/22"
+            ],
+            "sourceIpGroups": []
+        }
+    ]
+}

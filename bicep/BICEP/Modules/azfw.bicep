@@ -1,5 +1,6 @@
 param location string
 param hubVnetName string
+param spokeVnetName string
 param logAnalyticsWorkspaceName string
 
 // Azure Firewall variables
@@ -14,6 +15,34 @@ Location: 'japaneast'
 Owner: 'akkoike'
 }
 
+// Default Azure Firewall Application Rule
+var AZFW_DEFAULT_RULE = loadJsonContent('../default-azfw-apprule.json', 'rules')
+// As you need you should uncomment this section and add your custom application rules
+/*
+var AZFW_APP_RULE_CUSTOM_RULES = [
+  {
+            name: 'hogehoge.com'
+            protocols: [
+                {
+                    protocolType: 'Http'
+                    port: 80
+                }
+                {
+                    protocolType: 'https'
+                    port: 443
+                }
+            ]
+            fqdnTags: []
+            targetFqdns: '*.hogehoge.com'
+            sourceAddresses: '*'
+            sourceIpGroups: []
+  }
+]
+*/
+
+// Default Azure Firewall Network Rule
+var AZFW_DEFAULT_NETWORK_RULE = loadJsonContent('../default-azfw-nwrule.json', 'rules')
+
 // Reference the existing Log Analytics Workspace
 resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
   name: logAnalyticsWorkspaceName
@@ -21,6 +50,11 @@ resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces
 // Reference the existing HubVNET
 resource existinghubvnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
   name: hubVnetName
+}
+
+// Reference the existing SpokeVNET
+resource existingspokevnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
+  name: spokeVnetName
 }
 
 // Deploy public IP for Azure Firewall
@@ -42,6 +76,7 @@ resource azfw 'Microsoft.Network/azureFirewalls@2022-07-01' = {
   name: AZFW_NAME
   location: location
   tags: TAG_VALUE
+  zones: ['1']
   properties: {
     sku: {
       name: 'AZFW_VNet'
@@ -60,8 +95,31 @@ resource azfw 'Microsoft.Network/azureFirewalls@2022-07-01' = {
       }
     }
   ]
-  applicationRuleCollections: []
-  networkRuleCollections: []
+  applicationRuleCollections: [
+    {
+      name: 'default-azfw-apprule'
+      properties: {
+        priority: 100
+        action: {
+          type: 'Allow'
+        }
+        rules: AZFW_DEFAULT_RULE
+        //rules: concat(AZFW_DEFAULT_RULE, AZFW_APP_RULE_CUSTOM_RULES)
+      }
+    }
+  ]
+  networkRuleCollections: [
+    {
+      name: 'default-azfw-nwrule'
+      properties: {
+        priority: 100
+        action: {
+          type: 'Allow'
+        }
+        rules: AZFW_DEFAULT_NETWORK_RULE
+      }
+    }
+  ]
   natRuleCollections: []
   }
 }
@@ -98,15 +156,7 @@ resource azfwdignosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01
         }
       }
       {
-        category: 'AZFWDNSProxy'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-      {
-        category: 'AZFWPolicy'
+        category: 'AzureFirewallDnsProxy'
         enabled: true
         retentionPolicy: {
           enabled: true

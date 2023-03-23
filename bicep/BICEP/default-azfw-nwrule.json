@@ -1,0 +1,24 @@
+{
+    "rules": [
+       {
+            "name": "from-spokesubnet-and-dnssubnet-to-appgw",
+            "protocols": [
+                "TCP"
+            ],
+            "sourceAddresses": [
+                "172.16.0.0/22",
+                "192.168.4.0/29"
+            ],
+            "destinationAddresses": [
+                "192.168.3.0/27"
+            ],
+            "sourceIpGroups": [],
+            "destinationIpGroups": [],
+            "destinationFqdns": [],
+            "destinationPorts": [
+                "80",
+                "443"
+            ]
+       }
+    ]
+}
