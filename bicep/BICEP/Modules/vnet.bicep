@@ -14,12 +14,71 @@ var GW_HUB_SUBNET_NAME = 'GatewaySubnet'
 var GW_HUB_SUBNET_ADDRESS_PREFIX = '192.168.2.0/27'
 var APPGW_HUB_SUBNET_NAME = 'AppGwSubnet'
 var APPGW_HUB_SUBNET_ADDRESS_PREFIX = '192.168.3.0/27'
+var DNSSERVER_HUB_SUBNET_NAME = 'DnsServerSubnet'
+var DNS_HUB_SUBNET_ADDRESS_PREFIX = '192.168.4.0/29'
 
 // Spoke vNET valiables
 var VNET_SPOKE_NAME = 'vnet-poc-spoke-stag-001'
 var VNET_SPOKE_ADDRESS_SPACE = '172.16.0.0/16'
 var VM_SPOKE_SUBNET_NAME = 'VmSubnet'
 var VM_SPOKE_SUBNET_ADDRESS_PREFIX = '172.16.0.0/22'
+
+// DefaultRules for NSG Inbound
+var NSG_HUB_INBOUND_NAME = 'nsg_inbound-poc-hub-stag-001'
+var NSG_SPOKE_INBOUND_NAME = 'nsg_inbound-poc-spoke-stag-001'
+var NSG_DEFAULT_RULES = loadJsonContent('../default-rule-nsg.json', 'DefaultRules')
+
+// CustomRules for NSG Inbound (As you need you should uncomment this section and add your custom rules
+/*
+var customRules = [
+  {
+    name: 'Allow_Internet_HTTPS_Inbound'
+    properties: {
+      description: 'Allow inbound internet connectivity for HTTPS only.'
+      protocol: 'Tcp'
+      sourcePortRange: '*'
+      destinationPortRange: '443'
+      sourceAddressPrefix: 'Internet'
+      destinationAddressPrefix: 'VirtualNetwork'
+      access: 'Allow'
+      priority: 400
+      direction: 'Inbound'
+    }
+  }
+]
+*/
+var nsghubcustomRules = [
+  {
+    name: 'Allow_DNS_Inbound_TCP'
+    properties: {
+      description: 'Allow inbound DNS connectivity from DNS Servers on on-premiss via ER/VPN'
+      protocol: 'Tcp'
+      sourcePortRange: '*'
+      destinationPortRange: '53'
+      sourceAddressPrefix: 'Internet'
+      destinationAddressPrefix: 'VirtualNetwork'
+      access: 'Allow'
+      priority: 120
+      direction: 'Inbound'
+    }
+  }
+  {
+    name: 'Allow_DNS_Inbound_UDP'
+    properties: {
+      description: 'Allow inbound DNS connectivity from DNS Servers on on-premiss via ER/VPN'
+      protocol: 'Udp'
+      sourcePortRange: '*'
+      destinationPortRange: '53'
+      sourceAddressPrefix: 'Internet'
+      destinationAddressPrefix: 'VirtualNetwork'
+      access: 'Allow'
+      priority: 121
+      direction: 'Inbound'
+    }
+  }
+]
+
+
 
 // Reference the existing Log Analytics Workspace
 resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
@@ -81,6 +140,20 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
           ]
         }
       }
+      {
+        name: DNSSERVER_HUB_SUBNET_NAME
+        properties: {
+          addressPrefix: DNS_HUB_SUBNET_ADDRESS_PREFIX
+          serviceEndpoints: [
+            {
+              service: 'Microsoft.AzureActiveDirectory'
+            }
+          ]
+          networkSecurityGroup: {
+            id: nsginboundhub.id
+          }
+        }
+      }
     ]
   }
 }
@@ -105,6 +178,9 @@ resource spokeVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
               service: 'Microsoft.AzureActiveDirectory'
             }
           ]
+          networkSecurityGroup: {
+            id: nsginboundspoke.id
+          }
         }
       }
     ]
@@ -198,4 +274,26 @@ resource vnetpeeringspoke 'Microsoft.Network/virtualNetworks/virtualNetworkPeeri
     }
   }
 }
-output OUTPUT_LAW_RESOURCE_ID string = existingloganalyticsworkspace.id
+
+// Deploy NSG for hubVnet
+resource nsginboundhub 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+  name: NSG_HUB_INBOUND_NAME
+  location: location
+  properties: {
+    //securityRules: NSG_DEFAULT_RULES
+    securityRules: concat(NSG_DEFAULT_RULES, nsghubcustomRules)
+  }
+}
+
+// Deploy NSG for spokeVnet
+resource nsginboundspoke 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+  name: NSG_SPOKE_INBOUND_NAME
+  location: location
+  properties: {
+    securityRules: NSG_DEFAULT_RULES
+    //securityRules: concat(NSG_DEFAULT_RULES, customRules)
+  }
+}
+
+
+//output OUTPUT_LAW_RESOURCE_ID string = existingloganalyticsworkspace.id

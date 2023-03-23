@@ -1,0 +1,32 @@
+{
+  "DefaultRules": [
+    {
+      "name": "Inbound_Allow_RDP_from_bastion_address",
+      "properties": {
+        "description": "Allow inbound RDP from the bastion subnet address range.",
+        "protocol": "Tcp",
+        "sourceAddressPrefix": "192.168.1.0/26",
+        "sourcePortRange": "*",
+        "destinationAddressPrefix": "VirtualNetwork",
+        "destinationPortRange": "3389",
+        "access": "Allow",
+        "priority": 100,
+        "direction": "Inbound"
+      }
+    },
+    {
+      "name": "Inbound_Allow_SSH_from_bastion_address",
+        "properties": {
+            "description": "Allow inbound SSH from the bastion subnet address range.",
+            "protocol": "Tcp",
+            "sourceAddressPrefix": "192.168.1.0/26",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "VirtualNetwork",
+            "destinationPortRange": "22",
+            "access": "Allow",
+            "priority": 110,
+            "direction": "Inbound"
+        }
+    }
+  ]
+}
