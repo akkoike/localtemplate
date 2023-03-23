@@ -78,8 +78,6 @@ var nsghubcustomRules = [
   }
 ]
 
-
-
 // Reference the existing Log Analytics Workspace
 resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
   name: logAnalyticsWorkspaceName
