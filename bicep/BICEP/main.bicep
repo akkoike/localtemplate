@@ -29,6 +29,8 @@ module azfwmodule 'Modules/azfw.bicep' = {
     logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: vnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     spokeVnetName: vnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
+    spokeSubnetName: vnetmodule.outputs.OUTPUT_SPOKE_SUBNET_NAME
+    spokeSubnetAddressPrefix: vnetmodule.outputs.OUTPUT_SPOKE_SUBNET_ADDRESS_PREFIX
   }
   dependsOn: [
     vnetmodule
