@@ -1,7 +1,5 @@
 param location string
 param hubVnetName string
-param spokeVnetName string
-param spokeSubnetName string
 param logAnalyticsWorkspaceName string
 
 // Azure Firewall variables
@@ -15,9 +13,6 @@ CreateDate: '2023/03/23'
 Location: 'japaneast'
 Owner: 'akkoike'
 }
-
-// Route Table variables
-var ROUTE_TABLE_NAME = 'rt-poc-main-stag-001'
 
 // Default Azure Firewall Application Rule
 var AZFW_DEFAULT_RULE = loadJsonContent('../default-azfw-apprule.json', 'rules')
@@ -56,12 +51,6 @@ resource existinghubvnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing
   name: hubVnetName
 }
 
-// Reference the existing SpokeVNET
-/*resource existingspokevnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
-  name: spokeVnetName
-}
-*/
-
 // Deploy public IP for Azure Firewall
 resource azfwpip 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
   name: AZFW_PIP_NAME
@@ -73,37 +62,6 @@ resource azfwpip 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
   properties: {
     publicIPAllocationMethod: 'Static'
     publicIPAddressVersion: 'IPv4'
-  }
-}
-
-// Deploy Route Table for SpokeVNET
-resource spokevnetroutetable 'Microsoft.Network/routeTables@2020-05-01' = {
-  name: ROUTE_TABLE_NAME
-  location: location
-  tags: TAG_VALUE
-  properties: {
-    disableBgpRoutePropagation: false
-    routes: [
-      {
-        name: 'RouteTableForSpokeVnet'
-        properties: {
-          addressPrefix: '0.0.0.0/0'
-          nextHopType: 'VirtualAppliance'
-          nextHopIpAddress: azfw.properties.ipConfigurations[0].properties.privateIPAddress
-        }
-      }
-    ]
-  }
-}
-
-// Associate Route Table on SpokeSubnet 
-resource overridespokesubnet 'Microsoft.Network/virtualNetworks/subnets@2020-06-01' = {
-  name: '${spokeVnetName}/${spokeSubnetName}'
-  properties: {
-    addressPrefix: spokeSubnetAddressPrefix
-    routeTable: {
-     id: spokevnetroutetable.id
-    }
   }
 }
 
