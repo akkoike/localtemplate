@@ -307,4 +307,3 @@ resource nsginboundspoke 'Microsoft.Network/networkSecurityGroups@2021-08-01' = 
 output OUTPUT_HUB_VNET_NAME string = VNET_HUB_NAME
 output OUTPUT_SPOKE_VNET_NAME string = VNET_SPOKE_NAME
 output OUTPUT_SPOKE_SUBNET_NAME string = VM_SPOKE_SUBNET_NAME
-output OUTPUT_SPOKE_SUBNET_ADDRESS_PREFIX string = VM_SPOKE_SUBNET_ADDRESS_PREFIX

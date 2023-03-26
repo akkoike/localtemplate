@@ -2,7 +2,6 @@ param location string
 param hubVnetName string
 param spokeVnetName string
 param spokeSubnetName string
-param spokeSubnetAddressPrefix string
 param logAnalyticsWorkspaceName string
 
 // Azure Firewall variables
