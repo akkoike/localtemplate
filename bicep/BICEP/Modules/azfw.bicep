@@ -1,18 +1,21 @@
+// Azure Firewall
 param location string
 param hubVnetName string
 param logAnalyticsWorkspaceName string
 
-// Azure Firewall variables
-var AZFW_NAME = 'azfw-poc-main-stag-001'
-var AZFW_IF_NAME = 'azfwipconf-poc-main-stag-001'
-var AZFW_PIP_NAME = 'azfwpip-poc-main-stag-001'
-var AZFW_SKU = 'Standard'
+// Tag values
 var TAG_VALUE = {
 CostCenterNumber: '10181378'
 CreateDate: '2023/03/23'
 Location: 'japaneast'
 Owner: 'akkoike'
 }
+
+// Azure Firewall variables
+var AZFW_NAME = 'azfw-poc-main-stag-001'
+var AZFW_IF_NAME = 'azfwipconf-poc-main-stag-001'
+var AZFW_PIP_NAME = 'azfwpip-poc-main-stag-001'
+var AZFW_SKU = 'Standard'
 
 // Default Azure Firewall Application Rule
 var AZFW_DEFAULT_RULE = loadJsonContent('../default-azfw-apprule.json', 'rules')
@@ -170,3 +173,5 @@ resource azfwdignosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01
     ]
   }
 }
+
+output OUTPUT_AZFW_NAME string = azfw.name

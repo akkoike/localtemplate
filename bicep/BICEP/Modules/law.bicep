@@ -1,9 +1,13 @@
+// Log Analytics WorkSpace
 param location string
 
+// Log Analytics WorkSpace variables
 var LAW_NAME = 'law-poc-main-stag-001'
 var LAW_SKU = 'PerGB2018'
 var LAW_RETANTION = 30
 var LAW_SEARCH_VER = 2
+
+// Tag Values
 var TAG_VALUE = {
 CostCenterNumber: '10181378'
 CreateDate: '2023/03/23'
