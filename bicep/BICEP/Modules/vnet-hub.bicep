@@ -12,10 +12,6 @@ Owner: 'akkoike'
 // Hub vNET/Subnet valiables
 var VNET_HUB_NAME = 'vnet-poc-hub-stag-001'
 var VNET_HUB_ADDRESS_SPACE = '192.168.0.0/16'
-/*
-var VNET_HUB_TO_SPOKE_PEERING = 'vnetpeering-poc-hub2spoke-001'
-var VNET_SPOKE_TO_HUB_PEERING = 'vnetpeering-poc-spoke2hub-001'
-*/
 var AZFW_HUB_SUBNET_NAME = 'AzureFirewallSubnet'
 var AZFW_HUB_SUBNET_ADDRESS_PREFIX = '192.168.0.0/26'
 var BASTION_HUB_SUBNET_NAME = 'AzureBastionSubnet'
@@ -202,5 +198,3 @@ resource nsginboundhub 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
 }
 
 output OUTPUT_HUB_VNET_NAME string = VNET_HUB_NAME
-//output OUTPUT_SPOKE_VNET_NAME string = VNET_SPOKE_NAME
-//output OUTPUT_SPOKE_SUBNET_NAME string = VM_SPOKE_SUBNET_NAME
