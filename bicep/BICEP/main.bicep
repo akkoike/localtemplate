@@ -75,3 +75,18 @@ module peeringmodule 'Modules/vnetpeering.bicep' = {
     spokevnetmodule
   ]
 }
+
+// Application Gateway module
+module appgwmodule 'Modules/appgw.bicep' = {
+  name: 'appgw-modulename'
+  params: {
+    location: location
+    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
+    hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
+    spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
+  }
+  dependsOn: [
+    hubvnetmodule
+    azfwmodule
+  ]
+}
