@@ -2,16 +2,21 @@
   Main Template
   Please esecute from Visual Studio Code (https://azure.microsoft.com/ja-jp/products/visual-studio-code)
 
-      -> mouse over the main.bicep file
-            right click -> Deploy bicep file... -> Enter
-            select your subscription and resource group
-            (no need to select parameters.json file)
-            This template will deploy the following resources:
-                - Log Analytics Workspace
-                - Hub vNET
-                - Azure Firewall
-                - Spoke vNET
-                - Peering Hub vNET to Spoke vNET
+      At first:
+        Please set your User-PrincipalID(ObjectID) to userparam.json file.
+        -> Check your Azure Active Directory User blade by using Azure Portal.
+      At second:
+         mouse over the main.bicep file
+         right click -> Deploy bicep file... -> Enter
+         select your subscription and resource group
+         (no need to select parameters.json file)
+         This template will deploy the following resources:
+            - Log Analytics Workspace
+            - Hub vNET
+            - Azure Firewall
+            - Spoke vNET
+            - Peering Hub vNET to Spoke vNET
+            - Application Gateway
 */
 
 // Global variables
@@ -114,5 +119,18 @@ module appgwmodule 'Modules/appgw.bicep' = {
   dependsOn: [
     hubvnetmodule
     azfwmodule
+  ]
+}
+
+// Bastion module
+module bastionmodule 'Modules/bastion.bicep' = {
+  name: 'bastion-modulename'
+  params: {
+    location: location
+    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
+    hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
+  }
+  dependsOn: [
+    hubvnetmodule
   ]
 }

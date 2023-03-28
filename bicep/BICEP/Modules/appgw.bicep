@@ -200,6 +200,9 @@ resource appgw 'Microsoft.Network/applicationGateways@2020-05-01' = {
     {
       name: APPGW_HTTP_LISTENER_NAME
       properties: {
+        firewallPolicy: {
+          id: wafpolicy.id
+        }
         frontendIPConfiguration: {
           id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', APPGW_NAME, APPGW_FRONTEND_IP_CONFIG_NAME)
         }
@@ -216,6 +219,7 @@ resource appgw 'Microsoft.Network/applicationGateways@2020-05-01' = {
       name: 'rule1'
       properties: {
         ruleType: 'Basic'
+        priority: 10
         httpListener: {
           id: resourceId('Microsoft.Network/applicationGateways/httpListeners', APPGW_NAME, APPGW_HTTP_LISTENER_NAME)
         }
@@ -231,7 +235,7 @@ resource appgw 'Microsoft.Network/applicationGateways@2020-05-01' = {
   enableHttp2: false
   webApplicationFirewallConfiguration: {
     enabled: true
-    firewallMode: 'prevention'
+    firewallMode: 'Prevention'
     ruleSetType: 'OWASP'
     ruleSetVersion: '3.1'
     requestBodyCheck: true
