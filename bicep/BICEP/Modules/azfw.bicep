@@ -2,6 +2,7 @@
 param location string
 param hubVnetName string
 param logAnalyticsWorkspaceName string
+param principalId string
 
 // Tag values
 var TAG_VALUE = {
@@ -16,6 +17,28 @@ var AZFW_NAME = 'azfw-poc-main-stag-001'
 var AZFW_IF_NAME = 'azfwipconf-poc-main-stag-001'
 var AZFW_PIP_NAME = 'azfwpip-poc-main-stag-001'
 var AZFW_SKU = 'Standard'
+
+// RBAC Configuration
+resource contributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  //scope: subscription()
+  // Owner
+  //name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
+  // Contributer
+  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  // Reader
+  //name: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+}
+
+// RBAC assignment
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(azfw.id, principalId, contributorRoleDefinition.id)
+  scope: azfw
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: principalId
+    principalType: 'User'
+  }
+}
 
 // Default Azure Firewall Application Rule
 var AZFW_DEFAULT_RULE = loadJsonContent('../default-azfw-apprule.json', 'rules')

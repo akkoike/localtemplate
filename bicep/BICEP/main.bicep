@@ -16,13 +16,35 @@
 
 // Global variables
 param location string = resourceGroup().location
+//param akkoikeObjectId string = '16a7b5e2-8152-4132-85a3-95a078139291'
+
+var USER_OBJECT_ID = loadJsonContent('./userparam.json', 'UserObjectId001')
+//param managedIdentityName string = 'MyUserManagedIdentity'
+
+/*
+// Deploy Managed IDentity (User Assigned)
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: managedIdentityName
+  location: location
+}
+*/
 
 // Log Analytics Workspace module
 module loganalyticsmodule 'Modules/law.bicep' = {
   name: 'law-modulename'
   params: {
     location: location
+    principalId: USER_OBJECT_ID
+    /*
+    managedIdentityId: managedIdentity.id
+    principalId: managedIdentity.properties.principalId
+    */
   }
+  /*
+  dependsOn: [
+    managedIdentity
+  ]
+  */
 }
 
 // Hub vNET module
@@ -31,6 +53,7 @@ module hubvnetmodule 'Modules/vnet-hub.bicep' = {
   params: {
     location: location
     logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
+    principalId: USER_OBJECT_ID
   }
   dependsOn: [
     loganalyticsmodule
@@ -44,6 +67,7 @@ module azfwmodule 'Modules/azfw.bicep' = {
     location: location
     logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
+    principalId: USER_OBJECT_ID
   }
   dependsOn: [
     hubvnetmodule
@@ -57,6 +81,7 @@ module spokevnetmodule 'Modules/vnet-spoke.bicep' = {
     location: location
     logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     azureFirewallName: azfwmodule.outputs.OUTPUT_AZFW_NAME
+    principalId: USER_OBJECT_ID
   }
   dependsOn: [
     azfwmodule
@@ -84,6 +109,7 @@ module appgwmodule 'Modules/appgw.bicep' = {
     logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
+    principalId: USER_OBJECT_ID
   }
   dependsOn: [
     hubvnetmodule

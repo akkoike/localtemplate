@@ -1,6 +1,7 @@
 // Hub vNET
 param location string
 param logAnalyticsWorkspaceName string
+param principalId string
 
 // Tag values
 var TAG_VALUE = {
@@ -20,8 +21,8 @@ var GW_HUB_SUBNET_NAME = 'GatewaySubnet'
 var GW_HUB_SUBNET_ADDRESS_PREFIX = '192.168.2.0/27'
 var APPGW_HUB_SUBNET_NAME = 'AppGwSubnet'
 var APPGW_HUB_SUBNET_ADDRESS_PREFIX = '192.168.3.0/27'
-var DNSSERVER_HUB_SUBNET_NAME = 'DnsServerSubnet'
-var DNS_HUB_SUBNET_ADDRESS_PREFIX = '192.168.4.0/29'
+var DNS_HUB_SUBNET_NAME = 'DnsHubSubnet'
+var DNS_HUB_SUBNET_ADDRESS_PREFIX = '192.168.4.0/28'
 
 // DefaultRules for NSG Inbound
 var NSG_HUB_INBOUND_NAME = 'nsg_inbound-poc-hub-stag-001'
@@ -83,6 +84,28 @@ resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces
   name: logAnalyticsWorkspaceName
 }
 
+// RBAC Configuration
+resource contributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  //scope: subscription()
+  // Owner
+  //name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
+  // Contributer
+  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  // Reader
+  //name: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+}
+
+// RBAC assignment
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(hubVnet.id, principalId, contributorRoleDefinition.id)
+  scope: hubVnet
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: principalId
+    principalType: 'User'
+  }
+}
+
 // Deploy Hub vNET
 resource hubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
   name: VNET_HUB_NAME
@@ -140,7 +163,7 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
         }
       }
       {
-        name: DNSSERVER_HUB_SUBNET_NAME
+        name: DNS_HUB_SUBNET_NAME
         properties: {
           addressPrefix: DNS_HUB_SUBNET_ADDRESS_PREFIX
           serviceEndpoints: [
