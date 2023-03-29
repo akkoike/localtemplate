@@ -7,10 +7,10 @@
             ],
             "sourceAddresses": [
                 "172.16.0.0/22",
-                "192.168.4.0/29"
+                "192.168.4.0/28"
             ],
             "destinationAddresses": [
-                "192.168.3.0/27"
+                "192.168.3.0/24"
             ],
             "sourceIpGroups": [],
             "destinationIpGroups": [],

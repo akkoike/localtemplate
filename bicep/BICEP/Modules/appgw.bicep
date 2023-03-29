@@ -1,6 +1,7 @@
 // Application Gateway
 param location string
 param hubVnetName string
+param appgwSubnetName string
 param spokeVnetName string
 //param spokeSubnetName string
 //param spokeSubnetAddressPrefix string
@@ -29,6 +30,9 @@ var WAF_POLICY_NAME = 'wafpolicy-poc-appgw-stag-001'
 // Reference to the hub-vnet
 resource existinghubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
   name: hubVnetName
+  resource existingappgwsubnet 'subnets' existing = {
+    name: appgwSubnetName
+  }
 }
 
 // Reference to the spoke-vnet
@@ -78,7 +82,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
 }
 
 // Deploy Waf Policy
-resource wafpolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2020-05-01' = {
+resource wafpolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2021-08-01' = {
   name: WAF_POLICY_NAME
   location: location
   tags: TAG_VALUE
@@ -125,7 +129,7 @@ resource wafpolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPo
         
 
 // Deploy Application Gateway
-resource appgw 'Microsoft.Network/applicationGateways@2020-05-01' = {
+resource appgw 'Microsoft.Network/applicationGateways@2021-08-01' = {
   name: APPGW_NAME
   location: location
   tags: TAG_VALUE
@@ -140,7 +144,7 @@ resource appgw 'Microsoft.Network/applicationGateways@2020-05-01' = {
          name: APPGW_IP_CONFIG_NAME
          properties: {
            subnet: {
-             id: existinghubVnet.properties.subnets[3].id
+             id: existinghubVnet::existingappgwsubnet.id
            }
          }
        }
@@ -267,5 +271,21 @@ resource diagnosticappgw 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
         }
       }
     ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
   }
 }
+
+//output subnetname0 string = existinghubVnet.properties.subnets[0].name
+//output subnetname1 string = existinghubVnet.properties.subnets[1].name
+//output subnetname2 string = existinghubVnet.properties.subnets[2].name
+//output subnetname3 string = existinghubVnet.properties.subnets[3].name
+//output subnetname4 string = existinghubVnet.properties.subnets[4].name

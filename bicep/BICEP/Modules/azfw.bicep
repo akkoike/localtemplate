@@ -1,6 +1,7 @@
 // Azure Firewall
 param location string
 param hubVnetName string
+param azfwSubnetName string
 param logAnalyticsWorkspaceName string
 param principalId string
 
@@ -75,6 +76,9 @@ resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces
 // Reference the existing HubVNET
 resource existinghubvnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
   name: hubVnetName
+  resource existingazfwsubnet 'subnets' existing = {
+    name: azfwSubnetName
+  }
 }
 
 // Deploy public IP for Azure Firewall
@@ -107,7 +111,7 @@ resource azfw 'Microsoft.Network/azureFirewalls@2022-07-01' = {
       name: AZFW_IF_NAME
       properties: {
         subnet: {
-          id: existinghubvnet.properties.subnets[0].id
+          id: existinghubvnet::existingazfwsubnet.id
         }
         publicIPAddress: {
           id: azfwpip.id
