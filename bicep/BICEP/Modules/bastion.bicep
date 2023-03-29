@@ -63,6 +63,4 @@ resource bastion 'Microsoft.Network/bastionHosts@2022-07-01' = {
   }
 }
 
-
-
 output OUTPUT_BASTION_NAME string = bastion.name

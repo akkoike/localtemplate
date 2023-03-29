@@ -118,7 +118,6 @@ module appgwmodule 'Modules/appgw.bicep' = {
   }
   dependsOn: [
     hubvnetmodule
-    azfwmodule
   ]
 }
 

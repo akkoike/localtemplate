@@ -182,8 +182,6 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
           networkSecurityGroup: {
             id: nsginboundappgw.id
           }
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'enabled'
         }
       }
       {
@@ -230,28 +228,6 @@ resource hubVnetdiagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05
         }
       }
     ]
-  }
-}
-
-// Deploy NSG for dns subnet
-resource nsginbounddns 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
-  name: NSG_DNS_INBOUND_NAME
-  location: location
-  tags: TAG_VALUE
-  properties: {
-    //securityRules: NSG_DEFAULT_RULES
-    securityRules: concat(NSG_DEFAULT_DNS_RULES, NSG_HUB_CUSTOM_RULES)
-  }
-}
-
-// Deploy NSG for appgw subnet
-resource nsginboundappgw 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
-  name: NSG_APPGW_INBOUND_NAME
-  location: location
-  tags: TAG_VALUE
-  properties: {
-    //securityRules: NSG_DEFAULT_RULES
-    securityRules: NSG_APPGW_CUSTOM_RULES
   }
 }
 
