@@ -21,7 +21,6 @@
 
 // Global variables
 param location string = resourceGroup().location
-//param akkoikeObjectId string = '16a7b5e2-8152-4132-85a3-95a078139291'
 
 var USER_OBJECT_ID = loadJsonContent('./userparam.json', 'UserObjectId001')
 //param managedIdentityName string = 'MyUserManagedIdentity'
