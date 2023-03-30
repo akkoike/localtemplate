@@ -1,10 +1,10 @@
 /*
   Main Template
-  Please esecute from Visual Studio Code (https://azure.microsoft.com/ja-jp/products/visual-studio-code)
+  Please execute from Visual Studio Code (https://azure.microsoft.com/ja-jp/products/visual-studio-code)
 
       At first:
-        Please set your User-PrincipalID(ObjectID) to userparam.json file.
-        -> Check your Azure Active Directory User blade by using Azure Portal.
+        Please set your User-PrincipalID(ObjectID) to ./Modules/userparam.json file because of using RBAC.
+        -> Check your USER Object ID on Azure Active Directory blade by using Azure Portal.
       At second:
          mouse over the main.bicep file
          right click -> Deploy bicep file... -> Enter
@@ -17,6 +17,10 @@
             - Spoke vNET
             - Peering Hub vNET to Spoke vNET
             - Application Gateway
+            - Azure Bastion
+            - Azure Monitor Private Link Scope
+            - RBAC for all resources (Role Assignment)
+
 */
 
 // Global variables
@@ -131,5 +135,22 @@ module amplsmodule 'Modules/ampls.bicep' = {
   }
   dependsOn: [
     hubvnetmodule
+  ]
+}
+
+// RBAC module
+module rbacmodule 'Modules/rbac.bicep' = {
+  name: 'rbac-modulename'
+  params: {
+    appgwName: appgwmodule.outputs.OUTPUT_APPGW_NAME
+    azfwName: azfwmodule.outputs.OUTPUT_AZFW_NAME
+    bastionName: bastionmodule.outputs.OUTPUT_BASTION_NAME
+    lawName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
+    hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
+    spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
+    amplsName: amplsmodule.outputs.OUTPUT_AMPLS_NAME
+  }
+  dependsOn: [
+    appgwmodule
   ]
 }

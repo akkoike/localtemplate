@@ -179,3 +179,4 @@ resource azfwdignosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01
 }
 
 output OUTPUT_AZFW_NAME string = azfw.name
+output OUTPUT_AZFW_PIP_NAME string = azfwpip.name

@@ -142,3 +142,5 @@ resource nsginboundspoke 'Microsoft.Network/networkSecurityGroups@2021-08-01' = 
 }
 
 output OUTPUT_SPOKE_VNET_NAME string = spokeVnet.name
+output OUTPUT_NS_SPOKE_INBOUND_NAME string = nsginboundspoke.name
+output OUTPUT_ROUTE_TABLE_NAME string = spokevnetroutetable.name

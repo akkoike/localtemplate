@@ -17,7 +17,7 @@
                 "*.aadcdn.microsoftonline-p.com"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -39,7 +39,7 @@
                 "*.aka.ms"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -61,7 +61,7 @@
                 "*.applicationinsights.io"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -83,7 +83,7 @@
                 "*.azure.com"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -105,7 +105,7 @@
                 "*.azure.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -127,7 +127,7 @@
                 "*.azurefd.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -149,7 +149,7 @@
                 "*.azure-api.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -171,7 +171,7 @@
                 "*.azuredatalakestore.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -193,7 +193,7 @@
                 "*.azureedge.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -215,7 +215,7 @@
                 "*.loganalytics.io"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -237,7 +237,7 @@
                 "*.microsoft.com"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -259,7 +259,7 @@
                 "*.microsoftonline.com"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -281,7 +281,7 @@
                 "*.microsoftonline-p.com"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -303,7 +303,7 @@
                 "*.msauth.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -325,7 +325,7 @@
                 "*.msftauth.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -347,7 +347,7 @@
                 "*.trafficmanager.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -369,7 +369,7 @@
                 "*.visualstudio.com"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -391,7 +391,7 @@
                 "*.windows.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -413,7 +413,7 @@
                 "*.windows-int.net"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -435,7 +435,7 @@
                 "*.live.com"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []
@@ -457,7 +457,7 @@
                 "*.azurecr.io"
             ],
             "sourceAddresses": [
-                "192.168.4.0/29",
+                "192.168.4.0/26",
                 "172.16.0.0/22"
             ],
             "sourceIpGroups": []

@@ -34,4 +34,4 @@ resource laws 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
     }
   }
 }
-output OUTPUT_LAW_NAME string = LAW_NAME
+output OUTPUT_LAW_NAME string = laws.name

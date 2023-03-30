@@ -230,9 +230,13 @@ resource hubVnetdiagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05
   }
 }
 
-output OUTPUT_HUB_VNET_NAME string = VNET_HUB_NAME
+output OUTPUT_HUB_VNET_NAME string = hubVnet.name
 output OUTPUT_AZFW_HUB_SUBNET_NAME string = AZFW_HUB_SUBNET_NAME
 output OUTPUT_BASTION_HUB_SUBNET_NAME string = BASTION_HUB_SUBNET_NAME
 output OUTPUT_GW_HUB_SUBNET_NAME string = GW_HUB_SUBNET_NAME
 output OUTPUT_APPGW_HUB_SUBNET_NAME string = APPGW_HUB_SUBNET_NAME
 output OUTPUT_DNS_HUB_SUBNET_NAME string = DNS_HUB_SUBNET_NAME
+output OUTPUT_NSG_DNS_INBOUND_NAME string = nsginbounddns.name
+output OUTPUT_NSG_APPGW_INBOUND_NAME string = nsginboundappgw.name
+
+

@@ -44,6 +44,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03
   name: logAnalyticsWorkspaceName
 }
 
+/*
 // RBAC Configuration
 resource contributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   //scope: subscription()
@@ -65,6 +66,7 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
     principalType: 'User'
   }
 }
+*/
 
 // Deploy public ip address
 resource publicIp 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
@@ -283,8 +285,6 @@ resource diagnosticappgw 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
   }
 }
 
-//output subnetname0 string = existinghubVnet.properties.subnets[0].name
-//output subnetname1 string = existinghubVnet.properties.subnets[1].name
-//output subnetname2 string = existinghubVnet.properties.subnets[2].name
-//output subnetname3 string = existinghubVnet.properties.subnets[3].name
-//output subnetname4 string = existinghubVnet.properties.subnets[4].name
+output OUTPUT_APPGW_NAME string = appgw.name
+output OUTPUT_WAFPOLICY_NAME string = wafpolicy.name
+output OUTPUT_APPGW_PIP_NAME string = publicIp.name
