@@ -22,7 +22,6 @@
 // Global variables
 param location string = resourceGroup().location
 
-var USER_OBJECT_ID = loadJsonContent('./userparam.json', 'UserObjectId001')
 //param managedIdentityName string = 'MyUserManagedIdentity'
 
 /*

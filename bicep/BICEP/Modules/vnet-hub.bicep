@@ -103,28 +103,6 @@ resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces
   name: logAnalyticsWorkspaceName
 }
 
-// RBAC Configuration
-resource contributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
-  //scope: subscription()
-  // Owner
-  //name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
-  // Contributer
-  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-  // Reader
-  //name: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
-}
-
-// RBAC assignment
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(hubVnet.id, principalId, contributorRoleDefinition.id)
-  scope: hubVnet
-  properties: {
-    roleDefinitionId: contributorRoleDefinition.id
-    principalId: principalId
-    principalType: 'User'
-  }
-}
-
 // Deploy NSG for dns subnet
 resource nsginbounddns 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
   name: NSG_DNS_INBOUND_NAME
