@@ -136,3 +136,18 @@ module bastionmodule 'Modules/bastion.bicep' = {
     hubvnetmodule
   ]
 }
+
+// Azure Monitor Private Link Scope module
+module amplsmodule 'Modules/ampls.bicep' = {
+  name: 'ampls-modulename'
+  params: {
+    location: location
+    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
+    hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
+    dnsSubnetName: hubvnetmodule.outputs.OUTPUT_DNS_HUB_SUBNET_NAME
+    principalId: USER_OBJECT_ID
+  }
+  dependsOn: [
+    hubvnetmodule
+  ]
+}
