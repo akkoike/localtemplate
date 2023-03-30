@@ -6,7 +6,6 @@ param spokeVnetName string
 //param spokeSubnetName string
 //param spokeSubnetAddressPrefix string
 param logAnalyticsWorkspaceName string
-param principalId string
 
 // Tag values
 var TAG_VALUE = {

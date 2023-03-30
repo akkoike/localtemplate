@@ -1,6 +1,5 @@
 // Log Analytics WorkSpace
 param location string
-param principalId string
 //param managedIdentityId string
 
 // Log Analytics WorkSpace variables

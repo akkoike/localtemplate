@@ -3,7 +3,6 @@ param location string
 param hubVnetName string
 param azfwSubnetName string
 param logAnalyticsWorkspaceName string
-param principalId string
 
 // Tag values
 var TAG_VALUE = {

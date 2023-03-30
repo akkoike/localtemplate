@@ -2,7 +2,6 @@
 param location string
 param logAnalyticsWorkspaceName string
 param azureFirewallName string
-param principalId string
 
 // Tag values
 var TAG_VALUE = {

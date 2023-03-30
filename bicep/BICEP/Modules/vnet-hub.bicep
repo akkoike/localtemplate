@@ -1,7 +1,6 @@
 // Hub vNET
 param location string
 param logAnalyticsWorkspaceName string
-param principalId string
 
 // Tag values
 var TAG_VALUE = {
