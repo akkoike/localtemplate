@@ -2,7 +2,6 @@
 param location string
 param hubVnetName string
 param azfwSubnetName string
-param logAnalyticsWorkspaceName string
 
 // Tag values
 var TAG_VALUE = {
@@ -46,10 +45,6 @@ var AZFW_APP_RULE_CUSTOM_RULES = [
 // Default Azure Firewall Network Rule
 var AZFW_DEFAULT_NETWORK_RULE = loadJsonContent('../default-azfw-nwrule.json', 'rules')
 
-// Reference the existing Log Analytics Workspace
-resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
-  name: logAnalyticsWorkspaceName
-}
 // Reference the existing HubVNET
 resource existinghubvnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
   name: hubVnetName
@@ -122,59 +117,6 @@ resource azfw 'Microsoft.Network/azureFirewalls@2022-07-01' = {
     }
   ]
   natRuleCollections: []
-  }
-}
-
-// Deploy diagnostic settings for Azure Firewall
-resource azfwdignosticSettings 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: 'azfwdignosticSettings'
-  scope: azfw
-  properties: {
-    workspaceId: existingloganalyticsworkspace.id
-    logs: [
-      {
-        category: 'AZFWApplicationRule'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-      {
-        category: 'AZFWNetworkRule'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-      {
-        category: 'AZFWNatRule'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-      {
-        category: 'AzureFirewallDnsProxy'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
   }
 }
 

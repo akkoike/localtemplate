@@ -31,16 +31,6 @@ module loganalyticsmodule 'Modules/law.bicep' = {
   name: 'law-modulename'
   params: {
     location: location
-    /*
-    managedIdentityId: managedIdentity.id
-    principalId: managedIdentity.properties.principalId
-    */
-  }
-  /*
-  dependsOn: [
-    managedIdentity
-  ]
-  */
 }
 
 // Hub vNET module
@@ -48,7 +38,6 @@ module hubvnetmodule 'Modules/vnet-hub.bicep' = {
   name: 'hubvnet-modulename'
   params: {
     location: location
-    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
   }
   dependsOn: [
     loganalyticsmodule
@@ -60,7 +49,6 @@ module azfwmodule 'Modules/azfw.bicep' = {
   name: 'azfw-modulename'
   params: {
     location: location
-    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     azfwSubnetName: hubvnetmodule.outputs.OUTPUT_AZFW_HUB_SUBNET_NAME
   }
@@ -74,7 +62,6 @@ module spokevnetmodule 'Modules/vnet-spoke.bicep' = {
   name: 'spokevnet-modulename'
   params: {
     location: location
-    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     azureFirewallName: azfwmodule.outputs.OUTPUT_AZFW_NAME
   }
   dependsOn: [
@@ -100,7 +87,6 @@ module appgwmodule 'Modules/appgw.bicep' = {
   name: 'appgw-modulename'
   params: {
     location: location
-    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     appgwSubnetName: hubvnetmodule.outputs.OUTPUT_APPGW_HUB_SUBNET_NAME
     spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
@@ -115,7 +101,6 @@ module bastionmodule 'Modules/bastion.bicep' = {
   name: 'bastion-modulename'
   params: {
     location: location
-    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     bastionSubnetName: hubvnetmodule.outputs.OUTPUT_BASTION_HUB_SUBNET_NAME
   }
@@ -148,7 +133,6 @@ module rbacmodule 'Modules/rbac.bicep' = {
     lawName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
-    amplsName: amplsmodule.outputs.OUTPUT_AMPLS_NAME
   }
   dependsOn: [
     appgwmodule

@@ -1,6 +1,5 @@
 // Hub vNET
 param location string
-param logAnalyticsWorkspaceName string
 
 // Tag values
 var TAG_VALUE = {
@@ -97,11 +96,6 @@ var NSG_APPGW_CUSTOM_RULES = [
   }
 ]  
 
-// Reference the existing Log Analytics Workspace
-resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
-  name: logAnalyticsWorkspaceName
-}
-
 // Deploy NSG for dns subnet
 resource nsginbounddns 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
   name: NSG_DNS_INBOUND_NAME
@@ -195,35 +189,6 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2021-08-01' = {
           networkSecurityGroup: {
             id: nsginbounddns.id
           }
-        }
-      }
-    ]
-  }
-}
-
-// Deploy Diagnostic Setting on hubVnet
-resource hubVnetdiagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name : hubVnet.name
-  scope: hubVnet
-  properties: {
-    workspaceId: existingloganalyticsworkspace.id
-    logs: [
-      {
-        categoryGroup: 'AllLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
         }
       }
     ]

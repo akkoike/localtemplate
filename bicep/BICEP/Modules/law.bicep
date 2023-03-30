@@ -1,6 +1,5 @@
 // Log Analytics WorkSpace
 param location string
-//param managedIdentityId string
 
 // Log Analytics WorkSpace variables
 var LAW_NAME = 'law-poc-main-stag-001'

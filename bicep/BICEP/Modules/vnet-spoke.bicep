@@ -1,6 +1,5 @@
 // Spoke vNET
 param location string
-param logAnalyticsWorkspaceName string
 param azureFirewallName string
 
 // Tag values
@@ -39,10 +38,6 @@ var customRules = [
 ]
 */
 
-// Reference the existing Log Analytics Workspace
-resource existingloganalyticsworkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' existing = {
-  name: logAnalyticsWorkspaceName
-}
 // Reference the existing Azure Firewall
 resource azfw 'Microsoft.Network/azureFirewalls@2020-05-01' existing = {
   name: azureFirewallName
@@ -95,35 +90,6 @@ resource spokeVnet 'Microsoft.Network/virtualNetworks@2020-05-01' = {
           routeTable: {
             id: spokevnetroutetable.id
           }
-        }
-      }
-    ]
-  }
-}
-
-// Deploy Diagnostic Setting on spokeVnet
-resource spokeVnetdiagnosticSetting 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name : spokeVnet.name
-  scope: spokeVnet
-  properties: {
-    workspaceId: existingloganalyticsworkspace.id
-    logs: [
-      {
-        categoryGroup: 'AllLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
         }
       }
     ]

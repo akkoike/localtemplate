@@ -2,7 +2,6 @@
 param location string
 param hubVnetName string
 param bastionSubnetName string
-param logAnalyticsWorkspaceName string
 
 // Tag values
 var TAG_VALUE = {

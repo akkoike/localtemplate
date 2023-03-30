@@ -5,7 +5,6 @@ param appgwSubnetName string
 param spokeVnetName string
 //param spokeSubnetName string
 //param spokeSubnetAddressPrefix string
-param logAnalyticsWorkspaceName string
 
 // Tag values
 var TAG_VALUE = {
@@ -38,35 +37,6 @@ resource existinghubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing
 resource existingspokeVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
   name: spokeVnetName
 }
-
-// Reference to the log analytics workspace
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' existing = {
-  name: logAnalyticsWorkspaceName
-}
-
-/*
-// RBAC Configuration
-resource contributorRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
-  //scope: subscription()
-  // Owner
-  //name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
-  // Contributer
-  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-  // Reader
-  //name: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
-}
-
-// RBAC assignment
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(appgw.id, principalId, contributorRoleDefinition.id)
-  scope: appgw
-  properties: {
-    roleDefinitionId: contributorRoleDefinition.id
-    principalId: principalId
-    principalType: 'User'
-  }
-}
-*/
 
 // Deploy public ip address
 resource publicIp 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
@@ -237,51 +207,6 @@ resource appgw 'Microsoft.Network/applicationGateways@2021-08-01' = {
     firewallPolicy: {
       id: wafpolicy.id
     }
-  }
-}
-
-// Deploy diagnostic settings
-resource diagnosticappgw 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: APPGW_NAME
-  scope: appgw
-  properties: {
-    workspaceId: logAnalyticsWorkspace.id
-    logs: [
-      {
-        category: 'ApplicationGatewayAccessLog'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-      {
-        category: 'ApplicationGatewayPerformanceLog'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-      {
-        category: 'ApplicationGatewayFirewallLog'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
   }
 }
 
