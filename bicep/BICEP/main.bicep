@@ -27,10 +27,11 @@
 param location string = resourceGroup().location
 
 // Log Analytics Workspace module
-module loganalyticsmodule 'Modules/law.bicep' = {
+module lawmodule 'Modules/law.bicep' = {
   name: 'law-modulename'
   params: {
     location: location
+  }
 }
 
 // Hub vNET module
@@ -40,7 +41,7 @@ module hubvnetmodule 'Modules/vnet-hub.bicep' = {
     location: location
   }
   dependsOn: [
-    loganalyticsmodule
+    lawmodule
   ]
 }
 
@@ -109,12 +110,13 @@ module bastionmodule 'Modules/bastion.bicep' = {
   ]
 }
 
+/*
 // Azure Monitor Private Link Scope module
 module amplsmodule 'Modules/ampls.bicep' = {
   name: 'ampls-modulename'
   params: {
     location: location
-    logAnalyticsWorkspaceName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
+    logAnalyticsWorkspaceName: lawmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     dnsSubnetName: hubvnetmodule.outputs.OUTPUT_DNS_HUB_SUBNET_NAME
   }
@@ -122,6 +124,7 @@ module amplsmodule 'Modules/ampls.bicep' = {
     hubvnetmodule
   ]
 }
+*/
 
 // RBAC module
 module rbacmodule 'Modules/rbac.bicep' = {
@@ -130,11 +133,33 @@ module rbacmodule 'Modules/rbac.bicep' = {
     appgwName: appgwmodule.outputs.OUTPUT_APPGW_NAME
     azfwName: azfwmodule.outputs.OUTPUT_AZFW_NAME
     bastionName: bastionmodule.outputs.OUTPUT_BASTION_NAME
-    lawName: loganalyticsmodule.outputs.OUTPUT_LAW_NAME
+    lawName: lawmodule.outputs.OUTPUT_LAW_NAME
+    hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
+    spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
+    //amplsName: amplsmodule.outputs.OUTPUT_AMPLS_NAME
+  }
+  dependsOn: [
+    appgwmodule
+    bastionmodule
+    lawmodule
+
+  ]
+}
+
+// Diagnostic Settings module
+module diagsettingsmodule 'Modules/diagnostic.bicep' = {
+  name: 'diagsettings-modulename'
+  params: {
+    logAnalyticsWorkspaceName: lawmodule.outputs.OUTPUT_LAW_NAME
+    appgwName: appgwmodule.outputs.OUTPUT_APPGW_NAME
+    azfwName: azfwmodule.outputs.OUTPUT_AZFW_NAME
+    bastionName: bastionmodule.outputs.OUTPUT_BASTION_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
   }
   dependsOn: [
     appgwmodule
+    bastionmodule
+    lawmodule
   ]
 }
