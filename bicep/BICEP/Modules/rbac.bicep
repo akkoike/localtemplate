@@ -1,5 +1,6 @@
 param appgwName string
 param appgwpipName string
+param appgwwafName string
 param azfwName string
 param azfwpipName string
 param bastionName string
@@ -40,6 +41,10 @@ resource readerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-0
 // Reference application gateway
 resource appgw 'Microsoft.Network/applicationGateways@2020-06-01' existing = {
   name: appgwName
+}
+// Reference application gateway WAF
+resource appgwwaf 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2022-09-01' existing = {
+  name: appgwwafName
 }
 // Reference Azure Firewall
 resource azfw 'Microsoft.Network/azureFirewalls@2020-06-01' existing = {
@@ -99,6 +104,16 @@ resource nsgspoke 'Microsoft.Network/networkSecurityGroups@2020-05-01' existing 
 resource roleAssignmentappgw 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(appgw.id, USER_OBJECT_ID, contributorRoleDefinition.id)
   scope: appgw
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for application gateway WAF
+resource roleAssignmentappgwwaf 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(appgwwaf.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: appgwwaf
   properties: {
     roleDefinitionId: contributorRoleDefinition.id
     principalId: USER_OBJECT_ID

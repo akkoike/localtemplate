@@ -3,13 +3,23 @@ param appgwName string
 param azfwName string
 param bastionName string
 param logAnalyticsWorkspaceName string
-param amplsName string
+param pipappgwName string
+param pipbastionName string
+param pipazfwName string
+param nsgappgwwafName string
+param nsgdnsName string
+param nsgspokeName string
 
 // Diagnostic variables
 var APPGW_DIAG_NAME = 'diag-poc-appgw-stag-001'
 var AZFW_DIAG_NAME = 'diag-poc-azfw-stag-001'
 var BASTION_DIAG_NAME = 'diag-poc-bastion-stag-001'
-var AMPLS_DIAG_NAME = 'diag-poc-ampls-stag-001'
+var PIP_APPGW_DIAG_NAME = 'diag-poc-pipappgw-stag-001'
+var PIP_BASTION_DIAG_NAME = 'diag-poc-pipbastion-stag-001'
+var PIP_AZFW_DIAG_NAME = 'diag-poc-pipazfw-stag-001'
+var NSG_APPGW_WAF_DIAG_NAME = 'diag-poc-nsgappgwwaf-stag-001'
+var NSG_DNS_DIAG_NAME = 'diag-poc-nsgdns-stag-001'
+var NSG_SPOKE_DIAG_NAME = 'diag-poc-nsgspoke-stag-001'
 
 // Reference application gateway
 resource existingappgw 'Microsoft.Network/applicationGateways@2020-06-01' existing = {
@@ -27,10 +37,29 @@ resource existingbastion 'Microsoft.Network/bastionHosts@2020-05-01' existing = 
 resource existinglaw 'Microsoft.OperationalInsights/workspaces@2020-08-01' existing = {
   name: logAnalyticsWorkspaceName
 }
-/*
-// Reference Azure Monitor Private Link Scope
-resource ampls 'Microsoft.Insights/privateLinkScopes@2020-10-01' existing = {
-  name: amplsName
+// Reference Public IP Address for Application Gateway
+resource existingpipappgw 'Microsoft.Network/publicIPAddresses@2020-06-01' existing = {
+  name: pipappgwName
+}
+// Reference Public IP Address for Azure Bastion
+resource existingpipbastion 'Microsoft.Network/publicIPAddresses@2020-06-01' existing = {
+  name: pipbastionName
+}
+// Reference Public IP Address for Azure Firewall
+resource existingpipazfw 'Microsoft.Network/publicIPAddresses@2020-06-01' existing = {
+  name: pipazfwName
+}
+// Reference Network Security Group for Application Gateway WAF
+resource existingnsgappgwwaf 'Microsoft.Network/networkSecurityGroups@2020-06-01' existing = {
+  name: nsgappgwwafName
+}
+// Reference Network Security Group for DNS
+resource existingnsgdns 'Microsoft.Network/networkSecurityGroups@2020-06-01' existing = {
+  name: nsgdnsName
+}
+// Reference Network Security Group for Spoke
+resource existingnsgspoke 'Microsoft.Network/networkSecurityGroups@2020-06-01' existing = {
+  name: nsgspokeName
 }
 
 // Deploy diagnostic settings for application gateway
@@ -130,6 +159,219 @@ resource dignosticSettingsazfw 'Microsoft.Insights/diagnosticSettings@2021-05-01
     ]
   }
 }
+
+// Deploy diagnostic settings for public IP address of application gateway
+resource diagnosticpipappgw 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: PIP_APPGW_DIAG_NAME
+  scope: existingpipappgw
+  properties: {
+    workspaceId: existinglaw.id
+    logs: [
+      {
+        category: 'DDoSProtectionNotifications'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'DDoSMitigationFlowLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'DDoSMitigationReports'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+  }
+}
+// Deploy diagnostic settings for public IP address of Azure Bastion
+resource diagnosticpipbastion 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: PIP_BASTION_DIAG_NAME
+  scope: existingpipbastion
+  properties: {
+    workspaceId: existinglaw.id
+    logs: [
+      {
+        category: 'DDoSProtectionNotifications'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'DDoSMitigationFlowLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'DDoSMitigationReports'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+  }
+}
+// Deploy diagnostic settings for public IP address of Azure Firewall
+resource diagnosticpipazfw 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: PIP_AZFW_DIAG_NAME
+  scope: existingpipazfw
+  properties: {
+    workspaceId: existinglaw.id
+    logs: [
+      {
+        category: 'DDoSProtectionNotifications'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'DDoSMitigationFlowLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'DDoSMitigationReports'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+  }
+}
+// Deploy diagnostic settings for Network Security Group of Application Gateway WAF
+resource diagnosticnsgappgwwaf 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: NSG_APPGW_WAF_DIAG_NAME
+  scope: existingnsgappgwwaf
+  properties: {
+    workspaceId: existinglaw.id
+    logs: [
+      {
+        category: 'NetworkSecurityGroupEvent'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'NetworkSecurityGroupRuleCounter'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+  }
+}
+// Deploy diagnostic settings for Network Security Group of dns
+resource diagnosticnsgdns 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: NSG_DNS_DIAG_NAME
+  scope: existingnsgdns
+  properties: {
+    workspaceId: existinglaw.id
+    logs: [
+      {
+        category: 'NetworkSecurityGroupEvent'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'NetworkSecurityGroupRuleCounter'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+  }
+}
+// Deploy diagnostic settings for Network Security Group of spoke
+resource diagnosticnsgspoke 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: NSG_SPOKE_DIAG_NAME
+  scope: existingnsgspoke
+  properties: {
+    workspaceId: existinglaw.id
+    logs: [
+      {
+        category: 'NetworkSecurityGroupEvent'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'NetworkSecurityGroupRuleCounter'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+  }
+}
+
+
 
 // Deploy diagnostic settings for Azure Bastion
 
