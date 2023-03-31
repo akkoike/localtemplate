@@ -203,5 +203,3 @@ output OUTPUT_APPGW_HUB_SUBNET_NAME string = APPGW_HUB_SUBNET_NAME
 output OUTPUT_DNS_HUB_SUBNET_NAME string = DNS_HUB_SUBNET_NAME
 output OUTPUT_NSG_DNS_INBOUND_NAME string = nsginbounddns.name
 output OUTPUT_NSG_APPGW_INBOUND_NAME string = nsginboundappgw.name
-
-

@@ -45,13 +45,6 @@ resource ampls 'microsoft.insights/privateLinkScopes@2021-07-01-preview' = {
   tags: TAG_VALUE
   properties: {
     accessModeSettings: {
-      exclusions: [
-        {
-          privateEndpointConnectionName: PE_NAME
-          ingestionAccessMode: 'PrivateOnly'
-          queryAccessMode: 'Open'
-        }
-      ]
       ingestionAccessMode: 'PrivateOnly'
       queryAccessMode: 'Open'
     }

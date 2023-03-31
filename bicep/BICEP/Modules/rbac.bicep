@@ -54,12 +54,10 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
 resource spokeVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
   name: spokeVnetName
 }
-/*
 // Reference Azure Monitor Private Link Scope
 resource ampls 'Microsoft.Insights/privateLinkScopes@2020-10-01' existing = {
   name: amplsName
 }
-*/
 
 // RBAC assignment for application gateway
 resource roleAssignmentappgw 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
@@ -121,7 +119,6 @@ resource roleAssignmentspokevnet 'Microsoft.Authorization/roleAssignments@2020-0
     principalType: 'User'
   }
 }
-/*
 // RBAC assignment for Azure Monitor Private Link Scope
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(ampls.id, USER_OBJECT_ID, contributorRoleDefinition.id)
@@ -132,4 +129,3 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
     principalType: 'User'
   }
 }
-*/

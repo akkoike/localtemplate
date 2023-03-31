@@ -26,23 +26,12 @@
 // Global variables
 param location string = resourceGroup().location
 
-// Log Analytics Workspace module
-module lawmodule 'Modules/law.bicep' = {
-  name: 'law-modulename'
-  params: {
-    location: location
-  }
-}
-
 // Hub vNET module
 module hubvnetmodule 'Modules/vnet-hub.bicep' = {
   name: 'hubvnet-modulename'
   params: {
     location: location
   }
-  dependsOn: [
-    lawmodule
-  ]
 }
 
 // Azure Firewall module
@@ -110,7 +99,6 @@ module bastionmodule 'Modules/bastion.bicep' = {
   ]
 }
 
-/*
 // Azure Monitor Private Link Scope module
 module amplsmodule 'Modules/ampls.bicep' = {
   name: 'ampls-modulename'
@@ -124,7 +112,6 @@ module amplsmodule 'Modules/ampls.bicep' = {
     hubvnetmodule
   ]
 }
-*/
 
 // RBAC module
 module rbacmodule 'Modules/rbac.bicep' = {

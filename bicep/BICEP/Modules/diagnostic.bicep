@@ -39,12 +39,10 @@ resource existinghubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing
 resource existingspokeVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
   name: spokeVnetName
 }
-/*
 // Reference Azure Monitor Private Link Scope
 resource ampls 'Microsoft.Insights/privateLinkScopes@2020-10-01' existing = {
   name: amplsName
 }
-*/
 
 // Deploy diagnostic settings for application gateway
 resource diagnosticappgw 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
@@ -145,63 +143,5 @@ resource dignosticSettingsazfw 'Microsoft.Insights/diagnosticSettings@2021-05-01
 }
 
 // Deploy diagnostic settings for Azure Bastion
-
-// Deploy diagnostic settings for hub virtual network
-resource diagnosticSettingHubvnet 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name : HUBVNET_DIAG_NAME
-  scope: existinghubVnet
-  properties: {
-    workspaceId: existinglaw.id
-    logs: [
-      {
-        categoryGroup: 'AllLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
-  }
-}
-
-// Deploy diagnostic settings for spoke virtual network
-resource diagnosticSettingSpokevnet 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name : SPOKEVNET_DIAG_NAME
-  scope: existingspokeVnet
-  properties: {
-    workspaceId: existinglaw.id
-    logs: [
-      {
-        categoryGroup: 'AllLogs'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy: {
-          enabled: true
-          days: 30
-        }
-      }
-    ]
-  }
-}
 
 // Deploy diagnostic settings for Azure Monitor Private Link Scope
