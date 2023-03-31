@@ -32,7 +32,6 @@ resource existinglaw 'Microsoft.OperationalInsights/workspaces@2020-08-01' exist
 resource ampls 'Microsoft.Insights/privateLinkScopes@2020-10-01' existing = {
   name: amplsName
 }
-*/
 
 // Deploy diagnostic settings for application gateway
 resource diagnosticappgw 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {

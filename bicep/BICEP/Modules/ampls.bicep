@@ -1,6 +1,5 @@
 // Azure Monitor Prinvate Link Scope 
 param location string
-param logAnalyticsWorkspaceName string
 param hubVnetName string
 param dnsSubnetName string
 param pridnszonelist array = [
@@ -21,7 +20,6 @@ Owner: 'akkoike'
 
 // AMPLS/Private Endpoint/Private DNS Zone variables
 var AMPLS_NAME = 'ampls-poc-main-stag-001'
-var AMPLS_ASSOCIATION_NAME = 'amplsassociation-poc-main-stag-001'
 var PE_NAME = 'pe-poc-main-stag-001'
 var PLS_NAME = 'pls-poc-main-stag-001'
 var PDNS_ZONE_GROUP_NAME = 'zonegroup-poc-main-stag-001'
@@ -32,10 +30,6 @@ resource existinghubVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing
   resource existingdnssubnet 'subnets' existing = {
     name: dnsSubnetName
   }
-}
-// Reference existing Log Analytics Workspace
-resource existinglaworkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' existing = {
-  name: logAnalyticsWorkspaceName
 }
 
 // Deploy Azure Monitor Private Link Scopes resource
@@ -49,18 +43,6 @@ resource ampls 'microsoft.insights/privateLinkScopes@2021-07-01-preview' = {
       queryAccessMode: 'Open'
     }
   }
-}
-
-// Deploy Azure Monitor Private Link Scopes association resource
-resource amplsassociation 'Microsoft.Insights/privateLinkScopes/scopedResources@2021-07-01-preview' = {
-  parent: ampls
-  name: AMPLS_ASSOCIATION_NAME
-  properties: {
-    linkedResourceId: existinglaworkspace.id
-  }
-  dependsOn: [
-    peampls
-  ]
 }
 
 // Deploy Private Endpoint resource

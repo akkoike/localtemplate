@@ -6,12 +6,13 @@
         Please set your User-PrincipalID(ObjectID) to ./Modules/userparam.json file because of using RBAC.
         -> Check your USER Object ID on Azure Active Directory blade by using Azure Portal.
       At second:
-         mouse over the main.bicep file
-         right click -> Deploy bicep file... -> Enter
-         select your subscription and resource group
-         (no need to select parameters.json file)
-         This template will deploy the following resources:
-            - Log Analytics Workspace
+         1. Mouse over the main.bicep file
+         2. Right click -> Deploy bicep file... -> Enter
+         3. Select your subscription and resource group
+            (no need to select parameters.json file and default location is "Japan East")
+         4. Wait for a while
+
+       This template will deploy the following resources:
             - Hub vNET
             - Azure Firewall
             - Spoke vNET
