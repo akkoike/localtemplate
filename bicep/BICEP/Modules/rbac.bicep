@@ -1,10 +1,17 @@
 param appgwName string
+param appgwpipName string
 param azfwName string
+param azfwpipName string
 param bastionName string
+param bastionpipName string
 param lawName string
 param hubVnetName string
 param spokeVnetName string
-//param amplsName string
+param amplsName string
+param peName string
+param nsgappgwwafName string
+param nsgdnsName string
+param nsgspokeName string
 
 var USER_OBJECT_ID = loadJsonContent('./userparam.json', 'UserObjectId001')
 
@@ -55,9 +62,38 @@ resource spokeVnet 'Microsoft.Network/virtualNetworks@2020-05-01' existing = {
   name: spokeVnetName
 }
 // Reference Azure Monitor Private Link Scope
-resource ampls 'Microsoft.Insights/privateLinkScopes@2020-10-01' existing = {
+resource ampls 'microsoft.insights/privateLinkScopes@2021-07-01-preview' existing = {
   name: amplsName
 }
+// Reference Public IP for Azure Bastion
+resource bastionPublicIp 'Microsoft.Network/publicIPAddresses@2020-05-01' existing = {
+  name: bastionpipName
+}
+// Reference Public IP for Azure Firewall
+resource azfwpip 'Microsoft.Network/publicIPAddresses@2020-05-01' existing = {
+  name: azfwpipName
+}
+// Reference Public IP for Application Gateway
+resource appgwpip 'Microsoft.Network/publicIPAddresses@2020-05-01' existing = {
+  name: appgwpipName
+}
+// Reference Private Endpoint for Azure Monitor Private Link Scope
+resource privateendpointampls 'Microsoft.Network/privateEndpoints@2020-05-01' existing = {
+  name: peName
+}
+// Reference Network Security Group for Application Gateway WAF
+resource nsgappgwwaf 'Microsoft.Network/networkSecurityGroups@2020-05-01' existing = {
+  name: nsgappgwwafName
+}
+// Reference Network Security Group for DNS
+resource nsgdns 'Microsoft.Network/networkSecurityGroups@2020-05-01' existing = {
+  name: nsgdnsName
+}
+// Reference Network Security Group for Spoke
+resource nsgspoke 'Microsoft.Network/networkSecurityGroups@2020-05-01' existing = {
+  name: nsgspokeName
+}
+
 
 // RBAC assignment for application gateway
 resource roleAssignmentappgw 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
@@ -120,9 +156,79 @@ resource roleAssignmentspokevnet 'Microsoft.Authorization/roleAssignments@2020-0
   }
 }
 // RBAC assignment for Azure Monitor Private Link Scope
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource roleAssignmentampls 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(ampls.id, USER_OBJECT_ID, contributorRoleDefinition.id)
   scope: ampls
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for Public IP of Azure Bastion
+resource roleAssignmentpipbastion 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(bastionPublicIp.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: bastionPublicIp
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for Public IP of Azure Firewall
+resource roleAssignmentpipazfw 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(azfwpip.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: azfwpip
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for Public IP of Application Gateway
+resource roleAssignmentpipappgw 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(appgwpip.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: appgwpip
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for Private Endpoint of Azure Monitor Private Link Scope
+resource roleAssignmentpeampls 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(privateendpointampls.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: privateendpointampls
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for Network Security Group of Application Gateway WAF
+resource roleAssignmentnsgappgwwaf 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(nsgappgwwaf.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: nsgappgwwaf
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for Network Security Group of DNS
+resource roleAssignmentnsgdns 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(nsgdns.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: nsgdns
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for Network Security Group of Spoke
+resource roleAssignmentnsgspoke 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(nsgspoke.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: nsgspoke
   properties: {
     roleDefinitionId: contributorRoleDefinition.id
     principalId: USER_OBJECT_ID

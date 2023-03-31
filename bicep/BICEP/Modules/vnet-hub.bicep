@@ -25,7 +25,7 @@ var DNS_HUB_SUBNET_ADDRESS_PREFIX = '192.168.4.0/26'
 // DefaultRules for NSG Inbound
 var NSG_DNS_INBOUND_NAME = 'nsg_inbound-poc-dns-stag-001'
 var NSG_DEFAULT_RULES = loadJsonContent('../default-rule-hub-nsg.json', 'DefaultRules')
-var NSG_APPGW_INBOUND_NAME = 'nsg_inbound-poc-appgw-stag-001'
+var NSG_APPGW_INBOUND_NAME = 'nsg_inbound-poc-appgwwaf-stag-001'
 // CustomRules for NSG Inbound (As you need you should uncomment this section and add your custom rules
 /*
 var customRules = [

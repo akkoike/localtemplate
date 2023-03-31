@@ -136,3 +136,4 @@ resource pridnszoneforamplsgroup 'Microsoft.Network/privateEndpoints/privateDnsZ
 }
 
 output OUTPUT_AMPLS_NAME string = ampls.name
+output OUTPUT_PE_NAME string = peampls.name

@@ -24,8 +24,8 @@ resource laws 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
     sku: {
       name: LAW_SKU
     }
-    publicNetworkAccessForIngestion: 'Enabled'
-    //publicNetworkAccessForIngestion: 'Disabled'
+    //publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForIngestion: 'Disabled'
     publicNetworkAccessForQuery: 'Enabled'
     retentionInDays: LAW_RETANTION
     features: {

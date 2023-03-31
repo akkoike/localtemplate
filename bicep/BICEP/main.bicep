@@ -99,6 +99,14 @@ module bastionmodule 'Modules/bastion.bicep' = {
   ]
 }
 
+// Log Analytics Workspace module
+module lawmodule 'Modules/law.bicep' = {
+  name: 'law-modulename'
+  params: {
+    location: location
+  }
+}
+
 // Azure Monitor Private Link Scope module
 module amplsmodule 'Modules/ampls.bicep' = {
   name: 'ampls-modulename'
@@ -118,18 +126,28 @@ module rbacmodule 'Modules/rbac.bicep' = {
   name: 'rbac-modulename'
   params: {
     appgwName: appgwmodule.outputs.OUTPUT_APPGW_NAME
+    appgwpipName: appgwmodule.outputs.OUTPUT_APPGW_PIP_NAME
     azfwName: azfwmodule.outputs.OUTPUT_AZFW_NAME
+    azfwpipName: azfwmodule.outputs.OUTPUT_AZFW_PIP_NAME
     bastionName: bastionmodule.outputs.OUTPUT_BASTION_NAME
+    bastionpipName: bastionmodule.outputs.OUTPUT_BASTION_PIP_NAME
     lawName: lawmodule.outputs.OUTPUT_LAW_NAME
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
-    //amplsName: amplsmodule.outputs.OUTPUT_AMPLS_NAME
+    amplsName: amplsmodule.outputs.OUTPUT_AMPLS_NAME
+    peName: amplsmodule.outputs.OUTPUT_PE_NAME
+    nsgappgwwafName: hubvnetmodule.outputs.OUTPUT_NSG_APPGW_INBOUND_NAME
+    nsgdnsName: hubvnetmodule.outputs.OUTPUT_NSG_DNS_INBOUND_NAME
+    nsgspokeName: spokevnetmodule.outputs.OUTPUT_NSG_SPOKE_INBOUND_NAME
   }
   dependsOn: [
     appgwmodule
     bastionmodule
     lawmodule
-
+    azfwmodule
+    hubvnetmodule
+    spokevnetmodule
+    amplsmodule
   ]
 }
 
@@ -141,12 +159,13 @@ module diagsettingsmodule 'Modules/diagnostic.bicep' = {
     appgwName: appgwmodule.outputs.OUTPUT_APPGW_NAME
     azfwName: azfwmodule.outputs.OUTPUT_AZFW_NAME
     bastionName: bastionmodule.outputs.OUTPUT_BASTION_NAME
-    hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
-    spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
+    amplsName: amplsmodule.outputs.OUTPUT_AMPLS_NAME
   }
   dependsOn: [
     appgwmodule
     bastionmodule
     lawmodule
+    azfwmodule
+    amplsmodule
   ]
 }
