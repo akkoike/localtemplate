@@ -13,6 +13,7 @@ param peName string
 param nsgappgwwafName string
 param nsgdnsName string
 param nsgspokeName string
+param straccName string
 
 var USER_OBJECT_ID = loadJsonContent('./userparam.json', 'UserObjectId001')
 
@@ -98,7 +99,10 @@ resource nsgdns 'Microsoft.Network/networkSecurityGroups@2020-05-01' existing = 
 resource nsgspoke 'Microsoft.Network/networkSecurityGroups@2020-05-01' existing = {
   name: nsgspokeName
 }
-
+// Reference Storage Account for NSG Flow Logs
+resource straccnsgflow 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
+  name: straccName
+}
 
 // RBAC assignment for application gateway
 resource roleAssignmentappgw 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
@@ -244,6 +248,16 @@ resource roleAssignmentnsgdns 'Microsoft.Authorization/roleAssignments@2020-04-0
 resource roleAssignmentnsgspoke 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(nsgspoke.id, USER_OBJECT_ID, contributorRoleDefinition.id)
   scope: nsgspoke
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+// RBAC assignment for Storage Account of NSG Flow Logs
+resource roleAssignmentnsgflowlogs 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(straccnsgflow.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: straccnsgflow
   properties: {
     roleDefinitionId: contributorRoleDefinition.id
     principalId: USER_OBJECT_ID

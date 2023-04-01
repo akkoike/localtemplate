@@ -9,6 +9,7 @@ param pipazfwName string
 param nsgappgwwafName string
 param nsgdnsName string
 param nsgspokeName string
+param straccNsgFlowLogName string
 
 // Diagnostic variables
 var APPGW_DIAG_NAME = 'diag-poc-appgw-stag-001'
@@ -20,6 +21,7 @@ var PIP_AZFW_DIAG_NAME = 'diag-poc-pipazfw-stag-001'
 var NSG_APPGW_WAF_DIAG_NAME = 'diag-poc-nsgappgwwaf-stag-001'
 var NSG_DNS_DIAG_NAME = 'diag-poc-nsgdns-stag-001'
 var NSG_SPOKE_DIAG_NAME = 'diag-poc-nsgspoke-stag-001'
+var STR_ACC_NSG_FLOW_LOG_DIAG_NAME = 'diag-poc-straccnsgflowlog-stag-001'
 
 // Reference application gateway
 resource existingappgw 'Microsoft.Network/applicationGateways@2020-06-01' existing = {
@@ -60,6 +62,13 @@ resource existingnsgdns 'Microsoft.Network/networkSecurityGroups@2020-06-01' exi
 // Reference Network Security Group for Spoke
 resource existingnsgspoke 'Microsoft.Network/networkSecurityGroups@2020-06-01' existing = {
   name: nsgspokeName
+}
+// Reference Storage Account for Network Security Group Flow Logs
+resource existingstraccnsgflowlog 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+  name: straccNsgFlowLogName
+    resource existingstraccnsgflowlogblob 'blobServices' existing = {
+      name: 'default'
+    }
 }
 
 // Deploy diagnostic settings for application gateway
@@ -370,8 +379,50 @@ resource diagnosticnsgspoke 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
     ]
   }
 }
-
-
+// Deploy diagnostic settings for Storage Account of NSG Flow Logs
+resource diagnosticstorageaccountnsgflowlogs 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: STR_ACC_NSG_FLOW_LOG_DIAG_NAME
+  scope: existingstraccnsgflowlog::existingstraccnsgflowlogblob
+  properties: {
+    workspaceId: existinglaw.id
+    logs: [
+      {
+        category: 'StorageRead'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'StorageWrite'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+      {
+        category: 'StorageDelete'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'Transaction'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+  }
+}
 
 // Deploy diagnostic settings for Azure Bastion
 
