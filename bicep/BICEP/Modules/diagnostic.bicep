@@ -169,6 +169,35 @@ resource dignosticSettingsazfw 'Microsoft.Insights/diagnosticSettings@2021-05-01
   }
 }
 
+// Deploy diagnostic settings for Azure Bastion
+resource diagnosticbastion 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: BASTION_DIAG_NAME
+  scope: existingbastion
+  properties: {
+    workspaceId: existinglaw.id
+    logs: [
+      {
+        category: 'BastionAuditLogs'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          enabled: true
+          days: 30
+        }
+      }
+    ]
+  }
+}
+
 // Deploy diagnostic settings for public IP address of application gateway
 resource diagnosticpipappgw 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   name: PIP_APPGW_DIAG_NAME

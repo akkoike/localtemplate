@@ -29,6 +29,7 @@
 
 // Global variables
 param location string = resourceGroup().location
+param zonenumber string = '1'
 var currentResourceGroupName = resourceGroup().name
 
 // Hub vNET module
@@ -44,6 +45,7 @@ module azfwmodule 'Modules/azfw.bicep' = {
   name: 'azfw-modulename'
   params: {
     location: location
+    zonenumber: zonenumber
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     azfwSubnetName: hubvnetmodule.outputs.OUTPUT_AZFW_HUB_SUBNET_NAME
   }
@@ -82,6 +84,7 @@ module appgwmodule 'Modules/appgw.bicep' = {
   name: 'appgw-modulename'
   params: {
     location: location
+    zonenumber: zonenumber
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     appgwSubnetName: hubvnetmodule.outputs.OUTPUT_APPGW_HUB_SUBNET_NAME
     spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
@@ -96,6 +99,7 @@ module bastionmodule 'Modules/bastion.bicep' = {
   name: 'bastion-modulename'
   params: {
     location: location
+    zonenumber: zonenumber
     hubVnetName: hubvnetmodule.outputs.OUTPUT_HUB_VNET_NAME
     bastionSubnetName: hubvnetmodule.outputs.OUTPUT_BASTION_HUB_SUBNET_NAME
   }
@@ -179,6 +183,7 @@ module rbacmodule 'Modules/rbac.bicep' = {
     nsgappgwwafName: hubvnetmodule.outputs.OUTPUT_NSG_APPGW_INBOUND_NAME
     nsgdnsName: hubvnetmodule.outputs.OUTPUT_NSG_DNS_INBOUND_NAME
     nsgspokeName: spokevnetmodule.outputs.OUTPUT_NSG_SPOKE_INBOUND_NAME
+    straccName: straccmodule.outputs.OUTPUT_STORAGE_ACCOUNT_NSGFLOWLOG_NAME
   }
   dependsOn: [
     appgwmodule
@@ -205,6 +210,7 @@ module diagsettingsmodule 'Modules/diagnostic.bicep' = {
     nsgappgwwafName: hubvnetmodule.outputs.OUTPUT_NSG_APPGW_INBOUND_NAME
     nsgdnsName: hubvnetmodule.outputs.OUTPUT_NSG_DNS_INBOUND_NAME
     nsgspokeName: spokevnetmodule.outputs.OUTPUT_NSG_SPOKE_INBOUND_NAME
+    straccNsgFlowLogName: straccmodule.outputs.OUTPUT_STORAGE_ACCOUNT_NSGFLOWLOG_NAME
   }
   dependsOn: [
     appgwmodule

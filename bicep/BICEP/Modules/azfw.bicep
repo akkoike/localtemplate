@@ -2,6 +2,7 @@
 param location string
 param hubVnetName string
 param azfwSubnetName string
+param zonenumber string
 
 // Tag values
 var TAG_VALUE = {
@@ -58,6 +59,7 @@ resource azfwpip 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
   name: AZFW_PIP_NAME
   location: location
   tags: TAG_VALUE
+  zones: [zonenumber]
   sku: {
     name: 'Standard'
   }
@@ -72,7 +74,7 @@ resource azfw 'Microsoft.Network/azureFirewalls@2022-07-01' = {
   name: AZFW_NAME
   location: location
   tags: TAG_VALUE
-  zones: ['1']
+  zones: [zonenumber]
   properties: {
     sku: {
       name: 'AZFW_VNet'

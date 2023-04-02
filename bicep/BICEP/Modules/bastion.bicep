@@ -2,6 +2,7 @@
 param location string
 param hubVnetName string
 param bastionSubnetName string
+param zonenumber string
 
 // Tag values
 var TAG_VALUE = {
@@ -30,6 +31,7 @@ resource bastionpip 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
   name: BASTION_PIP_NAME
   location: location
   tags: TAG_VALUE
+  zones: [zonenumber]
   sku: {
     name: 'Standard'
   }

@@ -3,6 +3,7 @@ param location string
 param hubVnetName string
 param appgwSubnetName string
 param spokeVnetName string
+param zonenumber string
 //param spokeSubnetName string
 //param spokeSubnetAddressPrefix string
 
@@ -46,6 +47,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2020-05-01' = {
   sku: {
     name: 'Standard'
   }
+  zones: [zonenumber]
   properties: {
     publicIPAllocationMethod: 'Static'
     publicIPAddressVersion: 'IPv4'
@@ -104,6 +106,7 @@ resource appgw 'Microsoft.Network/applicationGateways@2021-08-01' = {
   name: APPGW_NAME
   location: location
   tags: TAG_VALUE
+  zones: [zonenumber]
   properties: {
     sku: {
       name: 'WAF_v2'
