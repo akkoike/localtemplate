@@ -94,25 +94,16 @@ module rbacspokevnet './ScopeModules/Rbac/rbac-spokevnet.bicep' = {
     spokeVnetName: spokeVnetName
   }
 }
-
-// RBAC assignment for spoke virtual network
-resource roleAssignmentspokevnet 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(spokeVnet.id, USER_OBJECT_ID, contributorRoleDefinition.id)
-  scope: spokeVnet
-  properties: {
-    roleDefinitionId: contributorRoleDefinition.id
-    principalId: USER_OBJECT_ID
-    principalType: 'User'
+module rbacstracc './ScopeModules/Rbac/rbac-stracc.bicep' = {
+  name: 'rbacstracc'
+  params: {
+    straccName: straccName
   }
 }
-// RBAC assignment for Public IP of Azure Firewall
-resource roleAssignmentpipazfw 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(azfwpip.id, USER_OBJECT_ID, contributorRoleDefinition.id)
-  scope: azfwpip
-  properties: {
-    roleDefinitionId: contributorRoleDefinition.id
-    principalId: USER_OBJECT_ID
-    principalType: 'User'
+module rbacbastionpip './ScopeModules/Rbac/rbac-bastionpip.bicep' = {
+  name: 'rbacbastionpip'
+  params: {
+    bastionpipName: bastionpipName
   }
 }
 module rbacazfwpip './ScopeModules/Rbac/rbac-azfwpip.bicep' = {
