@@ -198,6 +198,7 @@ module rbacmodule 'Modules/rbac.bicep' = {
     nsgdnsName: hubvnetmodule.outputs.OUTPUT_NSG_DNS_INBOUND_NAME
     nsgspokeName: spokevnetmodule.outputs.OUTPUT_NSG_SPOKE_INBOUND_NAME
     straccName: straccmodule.outputs.OUTPUT_STORAGE_ACCOUNT_NSGFLOWLOG_NAME
+    vmName: vmmodule.outputs.OUTPUT_VM_NAME
   }
   dependsOn: [
     appgwmodule
@@ -207,6 +208,7 @@ module rbacmodule 'Modules/rbac.bicep' = {
     hubvnetmodule
     spokevnetmodule
     amplsmodule
+    vmmodule
   ]
 }
 
