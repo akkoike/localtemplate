@@ -14,6 +14,7 @@ param nsgappgwwafName string
 param nsgdnsName string
 param nsgspokeName string
 param straccName string
+param vmName string
 
 // Dispatch several RBAC assignments modules
 module rbacampls './ScopeModules/Rbac/rbac-ampls.bicep' = {
@@ -110,5 +111,11 @@ module rbacazfwpip './ScopeModules/Rbac/rbac-azfwpip.bicep' = {
   name: 'rbacazfwpip'
   params: {
     azfwpipName: azfwpipName
+  }
+}
+module rbackvm './ScopeModules/Rbac/rbac-vm.bicep' = {
+  name: 'rbackvm'
+  params: {
+    vmName: vmName
   }
 }
