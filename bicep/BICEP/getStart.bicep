@@ -1,9 +1,35 @@
 /*
-  GetStart Bicep
-    - Please set your user-objectID to ./keyvault-user.json file.
-    - Please set your VM Admin Name/Password and User Object Name to variables.
+  Before starting getStart.bicep, please do the following.
+    - Please set your user-objectID to ./keyvault-user.json and ./Modules/ScopeModules/Rbac/*.json
+      And please set your Admin Password to login ubuntu VM (default: p@ssword1234)
   
-    - run the main.bicep automatically.
+    - run the getStart.bicep from Visual Studio Code
+      Automatically deploy the following resources.
+        - Resource Group
+        - Key Vault
+        - Key Vault Secret
+        - Virtual Network
+        - Subnet
+        - Network Security Group
+        - Network Security Group Rule
+        - Network Interface
+        - Route Table
+        - Public IP Address
+        - Virtual Machine
+        - Azure Managed Disk
+        - Virtual Machine Extension
+        - Azure Firewall
+        - Azure Firewall Net/App rules
+        - Azure Bastion
+        - Storage Account
+        - Log Analytics Workspace
+        - Azure Monitor Private Link Scope
+        - Azure Monitor Private Link Scope Private Endpoint
+        - Azure Private DNS Zone
+        - Azure Application Gateway
+        - Azure Web Application Firewall Policy
+        - RBAC
+        - Diagnostic Settings
 */
 
 // Global variables
@@ -26,8 +52,6 @@ module main 'main.bicep' = {
 // Key Vault -----------------------------------------------------------------------------------------------
 // Key Vault valiables
 var KEY_VAULT_NAME = 'keyv${uniqueString(resourceGroup().id)}'
-var SECRET_USEROBJECTID_NAME = 'userobjectid'
-var SECRET_USER_OBJECTID_VALUE = loadJsonContent('./keyvault-user.json')
 var SECRET_VMADMIN_NAME = 'vmadminpassword'
 var SECRET_VMADMINPASS_VALUE = loadJsonContent('./keyvault-pass.json')
 
@@ -129,16 +153,6 @@ resource secretVmadmin 'Microsoft.KeyVault/vaults/secrets@2022-11-01' = {
   name: SECRET_VMADMIN_NAME
   properties: {
     value: SECRET_VMADMINPASS_VALUE.vmadminpassword
-    //contentType: 'password'
-  }
-}
-
-// Set Key Vault Secret for User Object ID
-resource secretUserobjectid 'Microsoft.KeyVault/vaults/secrets@2022-11-01' = {
-  parent: keyV
-  name: SECRET_USEROBJECTID_NAME
-  properties: {
-    value: SECRET_USER_OBJECTID_VALUE.userobjectid
     //contentType: 'password'
   }
 }
