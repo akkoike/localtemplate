@@ -1,18 +1,5 @@
 /*
   Main Template
-  Please execute from Visual Studio Code (https://azure.microsoft.com/ja-jp/products/visual-studio-code)
-
-      At first:
-        Please set your User-PrincipalID(ObjectID) to ./Modules/userparam.json file because of using RBAC.
-        -> Check your USER Object ID on Azure Active Directory by using Azure Portal.
-
-      At second:
-         1. Mouse over the main.bicep file
-         2. Right click -> Deploy bicep file... -> Enter
-         3. Select your subscription and resource group
-            (no need to select parameters.json file and default location is "Japan East")
-         4. Wait for a while
-
        This template will deploy the following resources:
             - Hub vNET
             - Azure Firewall
