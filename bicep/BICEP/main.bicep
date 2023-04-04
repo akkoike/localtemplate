@@ -14,10 +14,17 @@
 
 */
 
-// Global variables
-param location string = resourceGroup().location
-var zoneNumber = '1'
-var currentResourceGroupName = resourceGroup().name
+// Module variables
+param location string
+param zoneNumber string
+param currentResourceGroupName string
+param keyvaultName string
+param keyvaultSecretVmadminName string
+
+// Reference keyvault
+resource existingkeyvault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+  name: keyvaultName
+}
 
 // Hub vNET module
 module hubvnetmodule 'Modules/vnet-hub.bicep' = {
@@ -128,6 +135,7 @@ module vmmodule 'Modules/vm.bicep' = {
     zonenumber: zoneNumber
     spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
     vmSubnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_SUBNET_NAME
+    secretVmadminpassword: existingkeyvault.getSecret(keyvaultSecretVmadminName)
   }
   dependsOn: [
     spokevnetmodule

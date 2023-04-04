@@ -4,6 +4,8 @@ param spokeVnetName string
 param vmSubnetName string
 param vmNumber int = 1
 param zonenumber string
+@secure()
+param secretVmadminpassword string
 
 // Tag values
 var TAG_VALUE = {
@@ -103,7 +105,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
     osProfile:{
       computerName: VM_MAIN_NAME
       adminUsername: ADMIN_USERNAME
-      adminPassword: ADMIN_PASSWORD
+      adminPassword: secretVmadminpassword
       linuxConfiguration: {
         disablePasswordAuthentication: false
       }
@@ -140,6 +142,20 @@ resource vmExtensionAzureMonitorForLinux 'Microsoft.Compute/virtualMachines/exte
     autoUpgradeMinorVersion: true
   }
 }
+/*
+// Deploy vm extension linuxDiagnostic
+resource vmExtensionLinuxDiagnostic 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
+  name: '${VM_NAME}LinuxDiagnostic'
+  parent: vm
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.Diagnostics'
+    type: 'LinuxDiagnostic'
+    typeHandlerVersion: '3.0'
+    autoUpgradeMinorVersion: true
+  }
+}
+*/
 
 output OUTPUT_VM_NAME string = vm.name
 output OUTPUT_NIC_NAME string = nic.name
