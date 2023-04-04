@@ -1,10 +1,12 @@
 /*
   Before starting getStart.bicep, please do the following.
     - Please set your user-objectID to ./keyvault-user.json and ./Modules/ScopeModules/Rbac/*.json
-      And please set your Admin Password to login ubuntu VM (default: p@ssword1234)
+      And please set your Admin Password too to login ubuntu VM
   
-    - run the getStart.bicep from Visual Studio Code
-      Automatically deploy the following resources.
+  Run the getStart.bicep from Visual Studio Code
+    - please select your subscription and resource group
+
+    - Automatically deploying the following resources.
         - Resource Group
         - Key Vault
         - Key Vault Secret
@@ -45,13 +47,14 @@ module main 'main.bicep' = {
     zoneNumber: zoneNumber
     currentResourceGroupName: currentResourceGroupName
     keyvaultName: keyV.name
-    keyvaultSecretVmadminpasswordName: secretVmadmin.name
+    keyvaultSecretVmadminName: secretVmadmin.name
   }
 }
 
 // Key Vault -----------------------------------------------------------------------------------------------
 // Key Vault valiables
 var KEY_VAULT_NAME = 'keyv${uniqueString(resourceGroup().id)}'
+var USER_OBJECTID_VALUE = loadJsonContent('./keyvault-user.json')
 var SECRET_VMADMIN_NAME = 'vmadminpassword'
 var SECRET_VMADMINPASS_VALUE = loadJsonContent('./keyvault-pass.json')
 
@@ -77,7 +80,7 @@ resource keyV 'Microsoft.KeyVault/vaults@2020-04-01-preview' = {
     accessPolicies: [
       {
         tenantId: subscription().tenantId
-        objectId: SECRET_USER_OBJECTID_VALUE.userobjectid
+        objectId: USER_OBJECTID_VALUE.userobjectid
         permissions: {
           keys: [
             'get'

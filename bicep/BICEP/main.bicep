@@ -1,18 +1,4 @@
-/*
-  Main Template
-       This template will deploy the following resources:
-            - Hub vNET
-            - Azure Firewall
-            - Spoke vNET
-            - Peering Hub vNET to Spoke vNET
-            - Application Gateway
-            - Azure Bastion
-            - Log Analytics Workspace
-            - Azure Monitor Private Link Scope
-            - RBAC for all resources (Role Assignment)
-            - Diagnostic Settings for several resources
-
-*/
+// Main Template
 
 // Module variables
 param location string
