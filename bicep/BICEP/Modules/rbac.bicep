@@ -14,7 +14,9 @@ param nsgappgwwafName string
 param nsgdnsName string
 param nsgspokeName string
 param straccName string
+param straccforVmName string
 param vmName string
+param keyvaultName string
 
 // Dispatch several RBAC assignments modules
 module rbacampls './ScopeModules/Rbac/rbac-ampls.bicep' = {
@@ -99,6 +101,7 @@ module rbacstracc './ScopeModules/Rbac/rbac-stracc.bicep' = {
   name: 'rbacstracc'
   params: {
     straccName: straccName
+    straccforVmName: straccforVmName
   }
 }
 module rbacbastionpip './ScopeModules/Rbac/rbac-bastionpip.bicep' = {
@@ -117,5 +120,11 @@ module rbackvm './ScopeModules/Rbac/rbac-vm.bicep' = {
   name: 'rbackvm'
   params: {
     vmName: vmName
+  }
+}
+module keyv './ScopeModules/Rbac/rbac-keyvault.bicep' = {
+  name: 'keyv'
+  params: {
+    keyvaultName: keyvaultName
   }
 }

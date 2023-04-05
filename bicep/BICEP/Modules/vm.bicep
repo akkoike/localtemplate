@@ -4,6 +4,7 @@ param spokeVnetName string
 param vmSubnetName string
 param vmNumber int = 1
 param zonenumber string
+param straccUri string
 @secure()
 param secretVmadminpassword string
 
@@ -19,16 +20,18 @@ var TAG_VALUE = {
 var VM_NAME = 'vm${vmNumber}'
 var VM_MAIN_NAME = '${VM_NAME}-poc-main-stag-001'
 var ADMIN_USERNAME = 'azureuser'
-var VM_SIZE = 'Standard_D2s_v3'
+var VM_SIZE = 'Standard_B1s'
 var VM_IMAGE_PUBLISHER = 'Canonical'
 var VM_IMAGE_OFFER = 'UbuntuServer'
 var VM_IMAGE_SKU = '18.04-LTS'
 var VM_IMAGE_VERSION = 'latest'
 var VM_NIC_NAME = 'nic-poc-${VM_NAME}-stag-001'
-var VM_MANAGED_DISK_REDUNDANCY = 'Standard_LRS'
+var VM_MANAGED_DISK_OS_REDUNDANCY = 'StandardSSD_LRS'
+var VM_MANAGED_DISK_DATA_REDUNDANCY = 'StandardSSD_LRS'
 var VM_OS_DISK_NAME = 'osdisk-poc-${VM_NAME}-stag-001'
 var VM_DATA_DISK_NAME = 'datadisk-poc-${VM_NAME}-stag-001'
 var VM_DATA_DISK_SIZE = 1023
+var VM_OS_DISK_CACHING = 'ReadWrite'
 var VM_DATA_DISK_CACHING = 'ReadOnly'
 
 // Reference the existing Spoke Subnet
@@ -68,6 +71,12 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
     hardwareProfile: {
       vmSize: VM_SIZE
     }
+    diagnosticsProfile: {
+      bootDiagnostics: {
+        enabled: true
+        storageUri: straccUri
+      }
+    }
     storageProfile: {
       imageReference: {
         publisher: VM_IMAGE_PUBLISHER
@@ -78,9 +87,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
       osDisk: {
         name: VM_OS_DISK_NAME
         createOption: 'FromImage'
-        caching: 'ReadWrite'
+        caching: VM_OS_DISK_CACHING
         managedDisk: {
-          storageAccountType: VM_MANAGED_DISK_REDUNDANCY
+          storageAccountType: VM_MANAGED_DISK_OS_REDUNDANCY
         }
         diskSizeGB: 30
       }
@@ -89,6 +98,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-11-01' = {
           name: VM_DATA_DISK_NAME
           createOption: 'Empty'
           caching: VM_DATA_DISK_CACHING
+          managedDisk: {
+            storageAccountType: VM_MANAGED_DISK_DATA_REDUNDANCY
+          }
           diskSizeGB: VM_DATA_DISK_SIZE
           lun: 0
         }
@@ -151,6 +163,7 @@ resource vmExtensionLinuxDiagnostic 'Microsoft.Compute/virtualMachines/extension
     type: 'LinuxDiagnostic'
     typeHandlerVersion: '3.0'
     autoUpgradeMinorVersion: true
+    //protectedSettings: any()
   }
 }
 

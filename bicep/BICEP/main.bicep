@@ -122,6 +122,7 @@ module vmmodule 'Modules/vm.bicep' = {
     spokeVnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_VNET_NAME
     vmSubnetName: spokevnetmodule.outputs.OUTPUT_SPOKE_SUBNET_NAME
     secretVmadminpassword: existingkeyvault.getSecret(keyvaultSecretVmadminName)
+    straccUri: straccmodule.outputs.OUTPUT_STORAGE_ACCOUNT_VM_URI
   }
   dependsOn: [
     spokevnetmodule
@@ -179,7 +180,9 @@ module rbacmodule 'Modules/rbac.bicep' = {
     nsgdnsName: hubvnetmodule.outputs.OUTPUT_NSG_DNS_INBOUND_NAME
     nsgspokeName: spokevnetmodule.outputs.OUTPUT_NSG_SPOKE_INBOUND_NAME
     straccName: straccmodule.outputs.OUTPUT_STORAGE_ACCOUNT_NSGFLOWLOG_NAME
+    straccforVmName: straccmodule.outputs.OUTPUT_STORAGE_ACCOUNT_VM_NAME
     vmName: vmmodule.outputs.OUTPUT_VM_NAME
+    keyvaultName: existingkeyvault.name
   }
   dependsOn: [
     appgwmodule
@@ -190,6 +193,7 @@ module rbacmodule 'Modules/rbac.bicep' = {
     spokevnetmodule
     amplsmodule
     vmmodule
+    straccmodule
   ]
 }
 
@@ -217,5 +221,7 @@ module diagsettingsmodule 'Modules/diagnostic.bicep' = {
     hubvnetmodule
     spokevnetmodule
     amplsmodule
+    vmmodule
+    straccmodule
   ]
 }

@@ -1,5 +1,6 @@
 // RBAC for Storage Account of NSG Flow Logs
 param straccName string
+param straccforVmName string
 
 // User variables
 var USER_OBJECT_ID = loadJsonContent('./stracc-user.json', 'UserObjectId001')
@@ -30,11 +31,25 @@ resource readerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-0
 resource straccnsgflow 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
   name: straccName
 }
+resource straccforvm 'Microsoft.Storage/storageAccounts@2021-04-01' existing = {
+  name: straccforVmName
+}
 
 // RBAC assignment for Storage Account of NSG Flow Logs
 resource roleAssignmentnsgflowlogs 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(straccnsgflow.id, USER_OBJECT_ID, contributorRoleDefinition.id)
   scope: straccnsgflow
+  properties: {
+    roleDefinitionId: contributorRoleDefinition.id
+    principalId: USER_OBJECT_ID
+    principalType: 'User'
+  }
+}
+
+// RBAC assignment for Storage Account of VM
+resource roleAssignmentforvm 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(straccforvm.id, USER_OBJECT_ID, contributorRoleDefinition.id)
+  scope: straccforvm
   properties: {
     roleDefinitionId: contributorRoleDefinition.id
     principalId: USER_OBJECT_ID
