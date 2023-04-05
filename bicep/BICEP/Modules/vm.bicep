@@ -19,7 +19,6 @@ var TAG_VALUE = {
 var VM_NAME = 'vm${vmNumber}'
 var VM_MAIN_NAME = '${VM_NAME}-poc-main-stag-001'
 var ADMIN_USERNAME = 'azureuser'
-var ADMIN_PASSWORD = 'P@ssword1234'
 var VM_SIZE = 'Standard_D2s_v3'
 var VM_IMAGE_PUBLISHER = 'Canonical'
 var VM_IMAGE_OFFER = 'UbuntuServer'
@@ -142,7 +141,6 @@ resource vmExtensionAzureMonitorForLinux 'Microsoft.Compute/virtualMachines/exte
     autoUpgradeMinorVersion: true
   }
 }
-/*
 // Deploy vm extension linuxDiagnostic
 resource vmExtensionLinuxDiagnostic 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
   name: '${VM_NAME}LinuxDiagnostic'
@@ -155,7 +153,6 @@ resource vmExtensionLinuxDiagnostic 'Microsoft.Compute/virtualMachines/extension
     autoUpgradeMinorVersion: true
   }
 }
-*/
 
 output OUTPUT_VM_NAME string = vm.name
 output OUTPUT_NIC_NAME string = nic.name
