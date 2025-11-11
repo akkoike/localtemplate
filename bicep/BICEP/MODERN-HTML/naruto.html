@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ナルト走り アバター</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #ff006e, #fb5607, #ffbe0b, #8338ec, #3a86ff);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }        .avatar {
+            position: relative;
+            width: 220px;
+            height: 350px;
+            animation: narutoRun 1.5s ease-in-out infinite;
+            transform: rotate(-15deg); /* 前傾姿勢 */
+        }
+
+        /* 頭部 */
+        .head {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(45deg, #fdbcb4, #ffcccb);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #2c2c2c;
+            animation: narutoHeadBob 1.5s ease-in-out infinite;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }        /* 髪の毛 - ナルトスタイル */
+        .hair {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            height: 70px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 50% 50% 30% 30%;
+            border: 3px solid #1a1a1a;
+            z-index: -1;
+        }
+
+        .hair::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 25px;
+            height: 40px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 60%;
+            border: 2px solid #1a1a1a;
+            transform: rotate(-20deg);
+        }
+
+        .hair::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 20px;
+            width: 25px;
+            height: 40px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 60%;
+            border: 2px solid #1a1a1a;
+            transform: rotate(20deg);
+        }
+
+        /* 目 */
+        .eyes {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 25px;
+        }
+
+        .eye {
+            width: 18px;
+            height: 18px;
+            background: #2c2c2c;
+            border-radius: 50%;
+            position: absolute;
+            animation: eyeDance 2s ease-in-out infinite;
+        }
+
+        .eye.left { 
+            left: 12px; 
+            animation-delay: 0.1s;
+        }
+        .eye.right { 
+            right: 12px; 
+            animation-delay: 0.1s;
+        }
+
+        .eye::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* 口 */
+        .mouth {
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 12px;
+            border: 3px solid #2c2c2c;
+            border-top: none;
+            border-radius: 0 0 25px 25px;
+            animation: mouthDance 1.5s ease-in-out infinite;
+        }
+
+        /* 体 */
+        .body {
+            position: absolute;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 110px;
+            background: linear-gradient(135deg, #FF6600, #FF9900);
+            border: 3px solid #2c2c2c;
+            border-radius: 15px;
+            animation: narutoBodyLean 1.5s ease-in-out infinite;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        /* 腕 */
+        .arm {
+            position: absolute;
+            width: 18px;
+            height: 80px;
+            background: linear-gradient(180deg, #fdbcb4, #ffcccb);
+            border: 2px solid #2c2c2c;
+            border-radius: 12px;
+            top: 95px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }        .arm.left {
+            left: 45px;
+            transform-origin: top center;
+            animation: narutoLeftArm 1.5s ease-in-out infinite;
+        }
+
+        .arm.right {
+            right: 45px;
+            transform-origin: top center;
+            animation: narutoRightArm 1.5s ease-in-out infinite;
+        }
+
+        /* 手 */
+        .hand {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #fdbcb4, #ffcccb);
+            border-radius: 50%;
+            border: 2px solid #2c2c2c;
+        }
+
+        /* 脚 */
+        .leg {
+            position: absolute;
+            width: 22px;
+            height: 90px;
+            background: linear-gradient(180deg, #fdbcb4, #ffcccb);
+            border: 2px solid #2c2c2c;
+            border-radius: 12px;
+            top: 200px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .leg.left {
+            left: 75px;
+            animation: narutoLeftLeg 1.5s ease-in-out infinite;
+        }
+
+        .leg.right {
+            right: 75px;
+            animation: narutoRightLeg 1.5s ease-in-out infinite;
+        }
+
+        /* 足 */
+        .foot {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 15px;
+            background: #2c2c2c;
+            border-radius: 15px 15px 5px 5px;
+        }
+
+        /* アクセサリー */        .cap {
+            position: absolute;
+            top: -20px;
+            left: 10px;
+            right: 10px;
+            height: 30px;
+            background: linear-gradient(135deg, #000080, #0000FF);
+            border-radius: 20px 20px 10px 10px;
+            border: 2px solid #2c2c2c;
+            z-index: 1;
+        }
+
+        .cap::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: -10px;
+            right: -10px;
+            height: 8px;
+            background: linear-gradient(135deg, #000080, #0000FF);
+            border-radius: 50%;
+            border: 2px solid #2c2c2c;
+        }
+
+        /* エフェクト */
+        .effect {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: effectBurst 2s ease-in-out infinite;
+        }
+
+        .effect:nth-child(1) { 
+            top: 15%; left: 15%; 
+            background: #ff006e;
+            animation-delay: 0s; 
+        }
+        .effect:nth-child(2) { 
+            top: 25%; right: 20%; 
+            background: #fb5607;
+            animation-delay: 0.3s; 
+        }
+        .effect:nth-child(3) { 
+            top: 45%; left: 10%; 
+            background: #ffbe0b;
+            animation-delay: 0.6s; 
+        }
+        .effect:nth-child(4) { 
+            top: 65%; right: 15%; 
+            background: #8338ec;
+            animation-delay: 0.9s; 
+        }
+        .effect:nth-child(5) { 
+            top: 80%; left: 20%; 
+            background: #3a86ff;
+            animation-delay: 1.2s; 
+        }
+
+        /* タイトル */
+        .title {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        /* 音楽ビジュアル */
+        .beat-line {
+            position: absolute;
+            width: 4px;
+            background: white;
+            border-radius: 2px;
+            opacity: 0.8;
+            animation: beatPulse 0.8s ease-in-out infinite;
+        }
+
+        .beat1 { height: 30px; top: 20%; left: 5%; animation-delay: 0s; }
+        .beat2 { height: 50px; top: 15%; left: 8%; animation-delay: 0.1s; }
+        .beat3 { height: 40px; top: 18%; left: 11%; animation-delay: 0.2s; }
+        .beat4 { height: 35px; top: 20%; left: 14%; animation-delay: 0.3s; }
+
+        .beat5 { height: 45px; top: 20%; right: 5%; animation-delay: 0.4s; }
+        .beat6 { height: 30px; top: 15%; right: 8%; animation-delay: 0.5s; }
+        .beat7 { height: 55px; top: 18%; right: 11%; animation-delay: 0.6s; }
+        .beat8 { height: 40px; top: 20%; right: 14%; animation-delay: 0.7s; }        /* アニメーション定義 - ナルト走り */
+        @keyframes narutoRun {
+            0%, 100% { 
+                transform: rotate(-15deg) translateY(0px) translateX(0px); 
+            }
+            25% { 
+                transform: rotate(-12deg) translateY(-8px) translateX(3px); 
+            }
+            50% { 
+                transform: rotate(-18deg) translateY(-15px) translateX(-2px); 
+            }
+            75% { 
+                transform: rotate(-12deg) translateY(-8px) translateX(3px); 
+            }
+        }
+
+        @keyframes narutoHeadBob {
+            0%, 100% { transform: translateX(-50%) rotate(2deg); }
+            50% { transform: translateX(-50%) rotate(-2deg); }
+        }
+
+        @keyframes narutoLeftArm {
+            0%, 100% { 
+                transform: rotate(-45deg) translateY(10px);
+                transform-origin: top center;
+            }
+            50% { 
+                transform: rotate(-55deg) translateY(15px);
+                transform-origin: top center;
+            }
+        }
+
+        @keyframes narutoRightArm {
+            0%, 100% { 
+                transform: rotate(-45deg) translateY(10px);
+                transform-origin: top center;
+            }
+            50% { 
+                transform: rotate(-35deg) translateY(15px);
+                transform-origin: top center;
+            }
+        }        @keyframes narutoBodyLean {
+            0%, 100% { transform: translateX(-50%) rotate(-5deg) scaleY(1); }
+            50% { transform: translateX(-50%) rotate(-8deg) scaleY(1.05); }        }@keyframes narutoLeftLeg {
+            0%, 100% { 
+                transform: rotate(15deg) translateY(5px);
+            }
+            50% { 
+                transform: rotate(25deg) translateY(10px);
+            }
+        }
+
+        @keyframes narutoRightLeg {
+            0%, 100% { 
+                transform: rotate(-15deg) translateY(5px);
+            }
+            50% { 
+                transform: rotate(-25deg) translateY(10px);
+            }
+        }
+
+        @keyframes eyeDance {
+            0%, 80%, 100% { transform: scale(1); }
+            90% { transform: scale(1.3); }
+        }
+
+        @keyframes mouthDance {
+            0%, 100% { transform: translateX(-50%) scaleY(1); }
+            50% { transform: translateX(-50%) scaleY(1.5); }
+        }
+
+        @keyframes effectBurst {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { 
+                transform: translateX(-50%) scale(1);
+                text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            }
+            50% { 
+                transform: translateX(-50%) scale(1.1);
+                text-shadow: 0 0 20px rgba(255,255,255,0.8), 2px 2px 8px rgba(0,0,0,0.5);
+            }
+        }
+
+        @keyframes beatPulse {
+            0%, 100% { transform: scaleY(0.5); opacity: 0.6; }
+            50% { transform: scaleY(1.5); opacity: 1; }
+        }
+
+        /* コントロール */
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #ff006e, #fb5607);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+
+        .paused .avatar * {
+            animation-play-state: paused;
+        }
+
+        /* 音楽コントロール */
+        .music-controls {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 200;
+        }
+
+        .music-btn {
+            padding: 10px 15px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #2c2c2c;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            min-width: 100px;
+        }
+
+        .music-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .music-btn.playing {
+            background: linear-gradient(45deg, #FF6600, #FF9900);
+            color: white;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.7);
+            padding: 8px 12px;
+            border-radius: 20px;
+        }
+
+        .volume-slider {
+            width: 60px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            outline: none;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .volume-slider:hover {
+            opacity: 1;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #FFD700;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #FFD700;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .song-info {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            text-align: center;
+            max-width: 120px;
+        }        /* スマホ対応 */
+        @media (max-width: 768px) {
+            .avatar {
+                transform: scale(0.8) rotate(-15deg);
+            }
+            
+            .title {
+                font-size: 28px;
+                top: 60px;
+            }
+            
+            .controls {
+                bottom: 20px;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .music-controls {
+                top: 10px;
+                right: 10px;
+                transform: scale(0.9);
+            }
+            
+            .music-btn {
+                font-size: 11px;
+                padding: 8px 12px;
+                min-width: 80px;
+            }
+            
+            .song-info {
+                font-size: 10px;
+                max-width: 100px;
+            }        }
+    </style>
+</head>
+<body>
+    <div class="stage">
+        <h1 class="title">🔥 ナルト走り × 一笑江湖 🔥</h1>
+        
+        <!-- 音楽ビジュアライザー -->
+        <div class="beat-line beat1"></div>
+        <div class="beat-line beat2"></div>
+        <div class="beat-line beat3"></div>
+        <div class="beat-line beat4"></div>
+        <div class="beat-line beat5"></div>
+        <div class="beat-line beat6"></div>
+        <div class="beat-line beat7"></div>
+        <div class="beat-line beat8"></div>
+        
+        <!-- エフェクト -->
+        <div class="effect"></div>
+        <div class="effect"></div>
+        <div class="effect"></div>
+        <div class="effect"></div>
+        <div class="effect"></div>
+        
+        <!-- アバター -->
+        <div class="avatar">
+            <!-- 頭部 -->
+            <div class="head">
+                <div class="hair"></div>
+                <div class="cap"></div>
+                <div class="eyes">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                </div>
+                <div class="mouth"></div>
+            </div>
+            
+            <!-- 体 -->
+            <div class="body"></div>
+            
+            <!-- 腕 -->
+            <div class="arm left">
+                <div class="hand"></div>
+            </div>
+            <div class="arm right">
+                <div class="hand"></div>
+            </div>
+            
+            <!-- 脚 -->
+            <div class="leg left">
+                <div class="foot"></div>
+            </div>
+            <div class="leg right">
+                <div class="foot"></div>
+            </div>
+        </div>
+        
+        <!-- コントロール -->
+        <div class="controls">            <button class="btn" onclick="toggleDance()">⏸️ 停止</button>
+            <button class="btn" onclick="changeSpeed()">⚡ 速度</button>
+            <button class="btn" onclick="addBurst()">💥 爆発</button>
+        </div>
+
+        <!-- 音楽コントロール -->
+        <div class="music-controls">
+            <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵 音楽再生</button>
+            <div class="volume-control">
+                <span style="color: white; font-size: 12px;">🔊</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" onchange="changeVolume()">
+            </div>        <div class="song-info">
+            <div>♪ 一笑江湖 ♪</div>
+            <div style="font-size: 9px; opacity: 0.8;">YouTube音楽</div>
+            <div style="font-size: 8px; opacity: 0.6; margin-top: 2px;">
+                <a href="https://www.youtube.com/watch?v=b3rFbkFjRrA" target="_blank" style="color: #FFD700; text-decoration: none;">
+                    🎬 YouTube で聴く
+                </a>
+            </div>
+        </div>
+            <button class="music-btn" onclick="openYouTube()" style="font-size: 10px; padding: 8px 12px; margin-top: 5px;">
+                📺 YouTube で開く
+            </button>
+        </div>        <!-- 音楽ファイル -->
+        <audio id="bgMusic" preload="auto" loop style="display: none;">
+            <!-- 著作権フリーの代替音楽 -->
+            <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_1390fd5ff7.mp3" type="audio/mpeg">
+            <source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7d87b.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- YouTube埋め込み（非表示） -->
+        <div id="youtube-container" style="position: absolute; top: -1000px; left: -1000px; opacity: 0; pointer-events: none;">
+            <iframe id="youtube-player" 
+                    width="1" 
+                    height="1" 
+                    src="https://www.youtube.com/embed/b3rFbkFjRrA?enablejsapi=1&autoplay=0&loop=1&playlist=b3rFbkFjRrA&controls=0&modestbranding=1"
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media" 
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+
+    <script>
+        let isPlaying = true;
+        let speed = 1;
+        let isMusicPlaying = false;
+        let bgMusic = null;
+          // 音楽初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            bgMusic = document.getElementById('bgMusic');
+            
+            // YouTube IFrame Player API の読み込み
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            
+            // 音楽が読み込めない場合の代替処理
+            if (bgMusic) {
+                bgMusic.addEventListener('error', function() {
+                    console.log('音楽ファイルが読み込めませんでした。合成音楽を使用します。');
+                    playChineseStyleMusic();
+                });
+            }
+        });
+
+        // YouTube Player変数
+        let youtubePlayer = null;
+        let useYouTube = false;
+
+        // YouTube Player API準備完了時の処理
+        window.onYouTubeIframeAPIReady = function() {
+            youtubePlayer = new YT.Player('youtube-player', {
+                events: {
+                    'onReady': function(event) {
+                        console.log('YouTube Player準備完了');
+                        useYouTube = true;
+                    },
+                    'onStateChange': function(event) {
+                        if (event.data === YT.PlayerState.ENDED && isMusicPlaying) {
+                            // ループ再生
+                            youtubePlayer.seekTo(0);
+                            youtubePlayer.playVideo();
+                        }
+                    }
+                }
+            });
+        };
+        
+        function toggleMusic() {
+            const musicBtn = document.getElementById('musicBtn');
+            
+            if (!isMusicPlaying) {
+                playMusic();
+                musicBtn.textContent = '🎵 音楽停止';
+                musicBtn.classList.add('playing');
+                isMusicPlaying = true;
+            } else {
+                stopMusic();
+                musicBtn.textContent = '🎵 音楽再生';
+                musicBtn.classList.remove('playing');
+                isMusicPlaying = false;
+            }
+        }
+          function playMusic() {
+            // YouTube Playerが利用可能な場合
+            if (useYouTube && youtubePlayer && youtubePlayer.playVideo) {
+                try {
+                    youtubePlayer.playVideo();
+                    console.log('YouTube音楽を再生中');
+                    return;
+                } catch (e) {
+                    console.log('YouTube再生エラー:', e);
+                }
+            }
+            
+            // HTML5 Audio を試行
+            if (bgMusic) {
+                bgMusic.play().catch(e => {
+                    console.log('HTML5音楽再生に失敗:', e);
+                    playChineseStyleMusic();
+                });
+            } else {
+                playChineseStyleMusic();
+            }
+        }
+        
+        function stopMusic() {
+            // YouTube Player停止
+            if (useYouTube && youtubePlayer && youtubePlayer.pauseVideo) {
+                try {
+                    youtubePlayer.pauseVideo();
+                } catch (e) {
+                    console.log('YouTube停止エラー:', e);
+                }
+            }
+            
+            // HTML5 Audio停止
+            if (bgMusic) {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+            }
+            
+            stopSyntheticMusic();
+        }
+        
+        function changeVolume() {
+            const volume = document.getElementById('volumeSlider').value;
+            
+            // YouTube Player音量調整
+            if (useYouTube && youtubePlayer && youtubePlayer.setVolume) {
+                try {
+                    youtubePlayer.setVolume(volume);
+                } catch (e) {
+                    console.log('YouTube音量調整エラー:', e);
+                }
+            }
+            
+            // HTML5 Audio音量調整
+            if (bgMusic) {
+                bgMusic.volume = volume / 100;
+            }
+        }
+        
+        // Web Audio APIを使用した中国風音楽の合成
+        let audioContext = null;
+        let musicNodes = [];
+        
+        function createSyntheticMusic() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                return true;
+            } catch (e) {
+                console.log('Web Audio API をサポートしていません');
+                return false;
+            }
+        }
+        
+        function playChineseStyleMusic() {
+            if (!audioContext) {
+                if (!createSyntheticMusic()) return;
+            }
+            
+            // 中国古風音楽のような音色を合成
+            const notes = [
+                { freq: 261.63, time: 0 },    // C4
+                { freq: 293.66, time: 0.5 },  // D4
+                { freq: 329.63, time: 1 },    // E4
+                { freq: 349.23, time: 1.5 },  // F4
+                { freq: 392.00, time: 2 },    // G4
+                { freq: 440.00, time: 2.5 },  // A4
+                { freq: 493.88, time: 3 },    // B4
+                { freq: 523.25, time: 3.5 },  // C5
+            ];
+            
+            function playNote(frequency, startTime, duration = 0.5) {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + startTime);
+                oscillator.type = 'sine'; // 柔らかい音色
+                
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime + startTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + startTime + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + duration);
+                
+                oscillator.start(audioContext.currentTime + startTime);
+                oscillator.stop(audioContext.currentTime + startTime + duration);
+                
+                musicNodes.push({ oscillator, gainNode });
+            }
+            
+            // 古風なメロディーパターンを再生
+            function playPattern() {
+                notes.forEach((note, index) => {
+                    playNote(note.freq, note.time, 0.8);
+                    if (index < notes.length - 1) {
+                        playNote(note.freq * 0.5, note.time + 0.2, 0.3); // ハーモニー
+                    }
+                });
+                
+                // 4秒後に繰り返し
+                setTimeout(() => {
+                    if (isMusicPlaying) {
+                        playPattern();
+                    }
+                }, 4000);
+            }
+            
+            playPattern();
+        }
+        
+        function stopSyntheticMusic() {
+            musicNodes.forEach(node => {
+                if (node.oscillator) {
+                    try {
+                        node.oscillator.stop();
+                    } catch (e) {
+                        // 既に停止している場合
+                    }
+                }
+            });
+            musicNodes = [];
+        }
+        
+        // キーボードコントロール
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleDance();
+                    break;
+                case 'ArrowUp':
+                    changeSpeed();
+                    break;
+                case 'Enter':
+                    addBurst();
+                    break;
+            }
+        });
+        
+        // 自動エフェクト
+        setInterval(() => {
+            if (Math.random() < 0.4 && isPlaying) {
+                addBurst();
+            }
+        }, 3000);
+        
+        // ビートに合わせたエフェクト
+        setInterval(() => {
+            if (isPlaying) {
+                const stage = document.querySelector('.stage');
+                stage.style.filter = 'brightness(1.2)';
+                setTimeout(() => {
+                    stage.style.filter = 'brightness(1)';
+                }, 100);
+            }        }, 800);
+    </script>
+</body>
+</html>
+
+        // YouTube リンク機能
+        function openYouTube() {
+            window.open('https://www.youtube.com/watch?v=b3rFbkFjRrA', '_blank');
+        }
+        
+        function toggleDance() {
+            const avatar = document.querySelector('.avatar');
+            const isPaused = avatar.classList.toggle('paused');
+            
+            const btn = event.currentTarget;
+            btn.textContent = isPaused ? '▶️ 再生' : '⏸️ 停止';
+            
+            if (isPaused) {
+                // 停止時の処理
+                stopMusic();
+            } else {
+                // 再生時の処理
+                playMusic();
+            }
+        }
+    </script>
+</body>
+</html>

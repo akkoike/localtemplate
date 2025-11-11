@@ -33,6 +33,7 @@ resource ampls 'microsoft.insights/privateLinkScopes@2021-07-01-preview' existin
 
 // RBAC assignment for Azure Monitor Private Link Scope
 resource roleAssignmentampls 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+//  name: guid(ampls.id, USER_OBJECT_ID, contributorRoleDefinition.id)
   name: guid(ampls.id, USER_OBJECT_ID, contributorRoleDefinition.id)
   scope: ampls
   properties: {

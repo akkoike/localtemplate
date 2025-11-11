@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阿部寛 OFFICIAL - 俳優公式サイト</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic Medium', 'Meiryo', 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.8;
+            font-weight: 400;
+        }        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+        }        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+            border-radius: 15px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(30, 60, 114, 0.3);
+        }
+          .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            animation: shimmer 8s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-decoration: none;
+            letter-spacing: 1.5px;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            background: linear-gradient(45deg, #ffffff, #f0f8ff, #e6f3ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            animation: titleGlow 4s ease-in-out infinite alternate;
+        }
+          @keyframes titleGlow {
+            0% { 
+                filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)) drop-shadow(0 0 16px rgba(102,126,234,0.3));
+            }
+            100% { 
+                filter: drop-shadow(0 0 12px rgba(255,255,255,0.6)) drop-shadow(0 0 24px rgba(102,126,234,0.5));
+            }
+        }
+          .subtitle {
+            font-size: 16px;
+            font-weight: 400;
+            color: rgba(240,248,255,0.95);
+            margin-top: 8px;
+            letter-spacing: 0.8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }.profile-section {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }        .profile-image {
+            float: left;
+            margin: 0 20px 15px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+          .profile-text {
+            text-align: justify;
+            font-size: 15px;
+            color: #343a40;
+            line-height: 1.7;
+        }
+          .works-section {
+            clear: both;
+            margin: 25px 0;
+        }
+          .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2c5aa0;
+            border-bottom: 2px solid #2c5aa0;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+          .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }        .work-item {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .work-item:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+          .work-title {
+            font-weight: 600;
+            color: #2c5aa0;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .work-year {
+            color: #6c757d;
+            font-size: 13px;
+            font-weight: 500;
+        }
+          .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 15px;
+            border-top: 1px solid #cccccc;
+            font-size: 12px;
+            color: #666666;
+        }
+          .retro-link {
+            color: #2c5aa0;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+        
+        .retro-link:hover {
+            color: #1e4080;
+        }        @media (max-width: 600px) {
+            .profile-image {
+                float: none;
+                display: block;
+                margin: 0 auto 15px auto;
+            }
+            
+            .works-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+              .main-title {
+                font-size: 24px;
+                letter-spacing: 1px;
+            }
+            
+            .header {
+                margin: 0 -10px 20px -10px;
+                border-radius: 0;
+                padding: 20px 15px;
+            }
+            
+            .subtitle {
+                font-size: 14px;
+            }
+            
+            .container {
+                padding: 5px;
+            }
+            
+            body {
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // プロフィールデータ
+        const profileData = {
+            name: "阿部 寛",
+            nameEn: "ABE HIROSHI",
+            birthDate: "1964年6月22日",
+            birthPlace: "神奈川県横浜市",
+            height: "189cm",
+            bloodType: "A型",
+            agency: "茂田オフィス"
+        };
+        
+        // 出演作品データ（サンプル）
+        const worksData = [
+            { title: "TRICK", year: "2000-2014", type: "ドラマ" },
+            { title: "結婚できない男", year: "2006", type: "ドラマ" },
+            { title: "アフタースクール", year: "2008", type: "映画" },
+            { title: "テルマエ・ロマエ", year: "2012", type: "映画" },
+            { title: "まほろ駅前多田便利軒", year: "2011", type: "映画" },
+            { title: "アンフェア", year: "2015", type: "映画" },
+            { title: "下町ロケット", year: "2015", type: "ドラマ" },
+            { title: "まほろ駅前番外地", year: "2013", type: "ドラマ" }
+        ];
+        
+        // メインコンポーネント
+        function App() {
+            const [currentTime, setCurrentTime] = useState(new Date());
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setCurrentTime(new Date());
+                }, 1000);
+                
+                return () => clearInterval(timer);
+            }, []);
+            
+            return (
+                <div className="container">
+                    <Header />
+                    <ProfileSection />
+                    <WorksSection />
+                    <Footer currentTime={currentTime} />
+                </div>
+            );
+        }        // ヘッダーコンポーネント
+        function Header() {
+            return (
+                <div className="header">
+                    <h1 className="main-title">阿部寛 OFFICIAL</h1>
+                    <p className="subtitle">俳優 | Actor | 演技の職人</p>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginTop: '15px',
+                        gap: '15px',
+                        position: 'relative',
+                        zIndex: 1
+                    }}>
+                        <div style={{
+                            width: '30px',
+                            height: '1px',
+                            background: 'linear-gradient(90deg, transparent, rgba(240,248,255,0.8), transparent)',
+                            borderRadius: '1px'
+                        }}></div>
+                        <span style={{
+                            fontSize: '20px',
+                            color: 'rgba(240,248,255,0.9)',
+                            textShadow: '0 0 8px rgba(102,126,234,0.5)'
+                        }}>✦</span>
+                        <div style={{
+                            width: '30px',
+                            height: '1px',
+                            background: 'linear-gradient(90deg, transparent, rgba(240,248,255,0.8), transparent)',
+                            borderRadius: '1px'
+                        }}></div>
+                    </div>
+                </div>
+            );
+        }
+        
+        // プロフィールセクション
+        function ProfileSection() {
+            return (                <div className="profile-section">
+                    <img 
+                        src="./abe-top.jpg"
+                        alt="阿部寛"
+                        className="profile-image"
+                        width="150"
+                        height="200"
+                    />
+                    <div className="profile-text">
+                        <h2>プロフィール</h2>
+                        <p><strong>名前:</strong> {profileData.name} ({profileData.nameEn})</p>
+                        <p><strong>生年月日:</strong> {profileData.birthDate}</p>
+                        <p><strong>出身地:</strong> {profileData.birthPlace}</p>
+                        <p><strong>身長:</strong> {profileData.height}</p>
+                        <p><strong>血液型:</strong> {profileData.bloodType}</p>
+                        <p><strong>所属事務所:</strong> {profileData.agency}</p>
+                        
+                        <p style={{marginTop: '20px'}}>
+                            俳優として数多くの映画・ドラマに出演。コメディからシリアスまで幅広い役柄を演じる実力派俳優として活動中。
+                            代表作に「TRICK」シリーズ、「結婚できない男」、「テルマエ・ロマエ」などがある。
+                        </p>
+                    </div>
+                    <div style={{clear: 'both'}}></div>
+                </div>
+            );
+        }
+        
+        // 出演作品セクション
+        function WorksSection() {
+            const [filter, setFilter] = useState('all');
+            
+            const filteredWorks = filter === 'all' 
+                ? worksData 
+                : worksData.filter(work => work.type === filter);
+                
+            return (
+                <div className="works-section">
+                    <h2 className="section-title">主な出演作品</h2>
+                    
+                    <div style={{marginBottom: '20px'}}>                        <button 
+                            onClick={() => setFilter('all')}
+                            style={{
+                                padding: '8px 16px',
+                                margin: '0 6px',
+                                backgroundColor: filter === 'all' ? '#2c5aa0' : '#ffffff',
+                                color: filter === 'all' ? '#ffffff' : '#2c5aa0',
+                                border: '1px solid #2c5aa0',
+                                borderRadius: '20px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                transition: 'all 0.3s ease',
+                                boxShadow: filter === 'all' ? '0 2px 4px rgba(44,90,160,0.3)' : 'none'
+                            }}
+                        >
+                            全て
+                        </button>                        <button 
+                            onClick={() => setFilter('ドラマ')}
+                            style={{
+                                padding: '8px 16px',
+                                margin: '0 6px',
+                                backgroundColor: filter === 'ドラマ' ? '#2c5aa0' : '#ffffff',
+                                color: filter === 'ドラマ' ? '#ffffff' : '#2c5aa0',
+                                border: '1px solid #2c5aa0',
+                                borderRadius: '20px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                transition: 'all 0.3s ease',
+                                boxShadow: filter === 'ドラマ' ? '0 2px 4px rgba(44,90,160,0.3)' : 'none'
+                            }}
+                        >
+                            ドラマ
+                        </button>                        <button 
+                            onClick={() => setFilter('映画')}
+                            style={{
+                                padding: '8px 16px',
+                                margin: '0 6px',
+                                backgroundColor: filter === '映画' ? '#2c5aa0' : '#ffffff',
+                                color: filter === '映画' ? '#ffffff' : '#2c5aa0',
+                                border: '1px solid #2c5aa0',
+                                borderRadius: '20px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                transition: 'all 0.3s ease',
+                                boxShadow: filter === '映画' ? '0 2px 4px rgba(44,90,160,0.3)' : 'none'
+                            }}
+                        >
+                            映画
+                        </button>
+                    </div>
+                    
+                    <div className="works-grid">
+                        {filteredWorks.map((work, index) => (
+                            <WorkItem key={index} work={work} />
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+        
+        // 作品アイテムコンポーネント
+        function WorkItem({ work }) {
+            return (
+                <div className="work-item">
+                    <div className="work-title">{work.title}</div>
+                    <div className="work-year">{work.year} - {work.type}</div>
+                </div>
+            );
+        }
+        
+        // フッターコンポーネント
+        function Footer({ currentTime }) {
+            return (
+                <div className="footer">
+                    <p>現在時刻: {currentTime.toLocaleString('ja-JP')}</p>
+                    <p>このサイトはReactで作成されたモダン版です</p>
+                    <p>
+                        <a href="#" className="retro-link">お問い合わせ</a> | 
+                        <a href="#" className="retro-link">リンク</a> | 
+                        <a href="#" className="retro-link">更新履歴</a>
+                    </p>
+                    <p style={{marginTop: '20px'}}>
+                        © 2025 阿部寛のホームページ (React版)
+                    </p>
+                </div>
+            );
+        }
+        
+        // アプリケーションをレンダリング
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
