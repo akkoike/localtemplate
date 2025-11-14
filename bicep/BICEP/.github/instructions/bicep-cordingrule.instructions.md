@@ -1,5 +1,5 @@
 ---
-applyTo: "C:\Users\akkoike\Desktop\TEST\bicep\BICEP\VibeCording\*"
+applyTo: "/Users/akkoike/Desktop/TEST/bicep/BICEP/VibeCording/**"
 ---
 
 # Bicep テンプレートに関するコーディングルール
