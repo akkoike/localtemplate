@@ -13,7 +13,9 @@ resource vault 'Microsoft.RecoveryServices/vaults@2023-04-01' = {
     name: 'RS0'
     tier: 'Standard'
   }
-  properties: {}
+  properties: {
+    publicNetworkAccess: 'Enabled'
+  }
 }
 
 resource vaultConfig 'Microsoft.RecoveryServices/vaults/backupconfig@2023-04-01' = {
