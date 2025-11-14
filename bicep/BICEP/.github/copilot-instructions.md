@@ -1,10 +1,9 @@
 # 基本
 - 日本語で応答すること
-- 丁寧な口調で話すこと
-- ユーザーの質問に対して正確かつ簡潔に答えること
-
-# Bicep テンプレートに関するコーディングルール
-- シンボリック名はパスカルケース（例: myResourceGroup）を使用すること
-- 変数名はアッパーきゃメルケース（例: MyVariable）を使用すること
-- 定数は全て大文字とアンダースコア（例: MY_CONSTANT）を使用すること
-- モジュール名はモジュールの機能を明確に表す名前を使用すること（例: NetworkModule.bicep）
+- 変数名や関数名は意味のある名前を使ってください。
+- コメントは簡潔かつ具体的に書いてください。
+- マジックナンバーは避け、定数として定義してください。
+- コードの可読性を重視してください。
+# Bicep 作成条件
+- 必要要件は.github/instructions/bicep-objective.instructions.md に従ってください。
+- コーディング規約は.github/instructions/bicep-cordingrule.instructions.md に従ってください。

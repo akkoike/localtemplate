@@ -18,10 +18,18 @@ applyTo: "C:\Users\akkoike\Desktop\TEST\bicep\BICEP\VibeCording\*"
   - Azure Virtual Network と Subnet
   - Azure VNet Peering
   - Azure Network Security Group
+  - Azure User Defined Route
   - Azure DNS Zone
-  - Azure Blob Storage Account
+  - Azure Storage Account
   - Azure Log Analytics Workspace
   - Azure Diagnostic Settings
+  - Azure Virtual Machine
+  - Azure VM Extension
+  - Azure Firewall
+  - Azure Bastion
+  - Azure Key Vault
+  - Azure Private Endpoint
+  - Azure Backup
 # bicep テンプレートのモジュール構成
 - main-standard.bicepをルートモジュールとして作成します。
   - modules フォルダを作成し、その中にbicepモジュールを配置します。
@@ -46,7 +54,10 @@ VibeCording/
 ├── modules/
 │   ├── vnet.bicep                          # VNetモジュール
 │   └── vnet-peering.bicep                  # VNetピアリングモジュール
+│   └── azfw.bicep                          # Azure Firewall モジュール
+│   └── bastion.bicep                       # Azure Bastion モジュール
 │   └── storageaccnt.bicep                  # ストレージアカウントモジュール
+│   └── keyvault.bicep                      # Key Vault モジュール
 │   └── loganalytics.bicep                  # Log Analytics ワークスペースモジュール
 └── README.md                               # Readmeファイル
 ```

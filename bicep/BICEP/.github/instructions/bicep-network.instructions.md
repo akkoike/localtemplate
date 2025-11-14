@@ -29,6 +29,19 @@ applyTo: "C:\Users\akkoike\Desktop\TEST\bicep\BICEP\VibeCording\*"
           - VMSubnet:172.16.0.0/24
 - HubとSpoke間で VNet Peering を構成します。
   - Hub-vNET と 各 Spoke-vNET との Peering を構成します。
+- Hub-VNet には Azure Firewall をデプロイします。
+  - Azure Firewall は AzureFirewallSubnet にデプロイします。
+  - Azure Firewall のパブリックIPアドレスは静的に割り当てます。
+  - Azure Firewall のアウトバウンド通信には、以下のルールを設定します。
+    - 送信元: 各Spoke-VNet のアドレス空間
+    - 宛先: *.azure.com (Azure サービス全般)
+    - プトコル: TCP
+    - ポート: 443と80
+    - アクション: Allow
+- Hub-VNet には Azure Bastion をデプロイします。
+  - Azure Bastion は AzureBastionSubnet にデプロイします。
 # 閉域接続要件
 - Azure Storage Account との接続は、workspace-VNet の private-endpoint-subnet からアドレス空間を利用して Private Endpoint 経由で接続できるように構成します。
-- Azure Log Analytics Workspace との接続は、workspace-VNet の private-endpoint-subnet からアドレス空間を利用して Private Endpoint 経由で接続できるように構成します.
+- Azure Log Analytics Workspace との接続は、workspace-VNet の private-endpoint-subnet からアドレス空間を利用して Azure Monitor Private Link 経由で接続できるように構成します。
+# ルーティング要件
+- 各 Spoke-VNet からインターネットへのアウトバウンド通信は、Hub-VNet にデプロイした Azure Firewall 経由で通信するようにRouteTableを使いデフォルトルートを設定します。
