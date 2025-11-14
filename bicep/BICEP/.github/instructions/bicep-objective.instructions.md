@@ -53,12 +53,17 @@ VibeCording/
 ├── Deploy-AzureStandardization.sh          # デプロイメントシェル
 ├── modules/
 │   ├── vnet.bicep                          # VNetモジュール
-│   └── vnet-peering.bicep                  # VNetピアリングモジュール
-│   └── azfw.bicep                          # Azure Firewall モジュール
-│   └── bastion.bicep                       # Azure Bastion モジュール
-│   └── storageaccnt.bicep                  # ストレージアカウントモジュール
-│   └── keyvault.bicep                      # Key Vault モジュール
-│   └── loganalytics.bicep                  # Log Analytics ワークスペースモジュール
+│   ├── vnet-peering.bicep                  # VNetピアリングモジュール
+│   ├── azfw.bicep                          # Azure Firewall モジュール
+│   ├── bastion.bicep                       # Azure Bastion モジュール
+│   ├── storageaccnt.bicep                  # ストレージアカウントモジュール
+│   ├── keyvault.bicep                      # Key Vault モジュール
+│   ├── loganalytics.bicep                  # Log Analytics ワークスペースモジュール
+│   ├── vm.bicep                            # Virtual Machine モジュール
+│   ├── backup.bicep                        # Backup モジュール
+│   ├── asr.bicep                           # Site Recovery モジュール
+│   ├── rbac.bicep                          # RBAC モジュール
+│   └── diagnostics.bicep                   # Diagnostics モジュール
 └── README.md                               # Readmeファイル
 ```
 
