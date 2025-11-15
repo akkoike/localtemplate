@@ -30,6 +30,12 @@ applyTo: "/Users/akkoike/Desktop/TEST/bicep/BICEP/VibeCording/**"
   - Azure Key Vault
   - Azure Private Endpoint
   - Azure Backup
+  - Azure Policy
+  - Azure Managed Identity
+  - Azure Site Recovery
+# 対象リージョン
+- メインリージョン: Japan East
+- セカンダリリージョン: Japan West
 # bicep テンプレートのモジュール構成
 - main-standard.bicepをルートモジュールとして作成します。
   - modules フォルダを作成し、その中にbicepモジュールを配置します。
@@ -62,7 +68,9 @@ VibeCording/
 │   ├── vm.bicep                            # Virtual Machine モジュール
 │   ├── backup.bicep                        # Backup モジュール
 │   ├── asr.bicep                           # Site Recovery モジュール
+│   ├── policy.bicep                        # Policy モジュール
 │   ├── rbac.bicep                          # RBAC モジュール
+│   ├── u-managedid.bicep                   # User Managed Identity モジュール
 │   └── diagnostics.bicep                   # Diagnostics モジュール
 └── README.md                               # Readmeファイル
 ```
