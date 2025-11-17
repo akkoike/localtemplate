@@ -40,6 +40,8 @@ applyTo: "/Users/akkoike/Desktop/TEST/bicep/BICEP/VibeCording/**"
     - アクション: Allow
 - Hub-VNet には Azure Bastion をデプロイします。
   - Azure Bastion は AzureBastionSubnet にデプロイします。
+  - Azure Bastion のパブリックIPアドレスは静的に割り当てます。
+  - Azure Bastion を使用して、各 Spoke-VNet 内の Virtual Machine への RDP および SSH アクセスを可能にします。
 # 閉域接続要件
 - Azure Storage Account との接続は、workspace-VNet の private-endpoint-subnet からアドレス空間を利用して Private Endpoint 経由で接続できるように構成します。
 - Azure Log Analytics Workspace との接続は、workspace-VNet の private-endpoint-subnet からアドレス空間を利用して Azure Monitor Private Link 経由で接続できるように構成します。
