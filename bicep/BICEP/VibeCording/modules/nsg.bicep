@@ -1,17 +1,33 @@
-// NSG module
-param location string
-param nsgName string
-param securityRules array = []
-param tags object
+param Location string
+param NsgName string
+param SecurityRules array
+param Tags object
+param LogAnalyticsWorkspaceId string = ''
+param StorageAccountId string = ''
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
-  name: nsgName
-  location: location
-  tags: tags
+resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
+  name: NsgName
+  location: Location
+  tags: Tags
   properties: {
-    securityRules: securityRules
+    securityRules: SecurityRules
   }
 }
 
-output nsgId string = nsg.id
-output nsgName string = nsg.name
+resource nsgDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(LogAnalyticsWorkspaceId) && !empty(StorageAccountId)) {
+  scope: networkSecurityGroup
+  name: 'diag-${NsgName}'
+  properties: {
+    workspaceId: LogAnalyticsWorkspaceId
+    storageAccountId: StorageAccountId
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+      }
+    ]
+  }
+}
+
+output NsgId string = networkSecurityGroup.id
+output NsgName string = networkSecurityGroup.name

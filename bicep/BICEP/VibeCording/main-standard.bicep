@@ -1,530 +1,481 @@
-// ========================================
-// Azure 標準化環境 - メインテンプレート
-// ========================================
-// このテンプレートは、Hub-Spoke トポロジーに基づく
-// Azure標準化環境を構築します
-//
-// 構成要素:
-// - 4つのVNet (Hub, Workspace, Spoke1, Spoke2)
-// - VNet Peering (Hub-Spoke)
-// - Azure Firewall
-// - Azure Bastion
-// - Storage Account (Private Endpoint)
-// - Log Analytics Workspace (AMPLS)
-// - Key Vault
-// - Virtual Machines with Backup
-// - NSG and Route Tables
-// ========================================
+targetScope = 'subscription'
 
-// ========================================
-// パラメータ定義
-// ========================================
-
-@description('環境識別子 (dev, stag, prod)')
-@allowed([
-  'dev'
-  'stag'
-  'prod'
-])
+param Location string
 param Environment string
+param ProjectName string
+param AdminEmail string
+param BackupRetentionDays int
+param LogRetentionDays int
+// param CostBudgetAmount int  // Reserved for future cost budget implementation
 
-@description('Azure リージョン')
-param Location string = 'japaneast'
-
-@description('プロジェクト名プレフィックス')
-param ProjectName string = 'azstd'
-
-@description('管理者メールアドレス')
-param AdminEmail string = 'akkoike@microsoft.com'
-
-@description('Azure AD テナント ID')
-param TenantId string = tenant().tenantId
-
-@description('VM管理者パスワード')
-@secure()
-param VmAdminPassword string
-
-// ========================================
-// 変数定義
-// ========================================
-
-var ResourcePrefix = '${ProjectName}-${Environment}'
-
-var CommonTags = {
+var ResourceGroupName = 'rg-${ProjectName}-${Environment}-${Location}'
+var Tags = {
   env: Environment
   project: ProjectName
-  owner: AdminEmail
-  managedBy: 'Bicep'
+  email: AdminEmail
 }
 
-// Hub VNet 設定
-var HubVNetConfig = {
-  name: '${ResourcePrefix}-vnet-hub'
-  addressSpace: '10.0.0.0/16'
-  subnets: [
-    {
-      name: 'GatewaySubnet'
-      addressPrefix: '10.0.0.0/24'
-    }
-    {
-      name: 'AzureFirewallSubnet'
-      addressPrefix: '10.0.1.0/26'
-    }
-    {
-      name: 'AzureBastionSubnet'
-      addressPrefix: '10.0.2.0/26'
-    }
-  ]
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+  name: ResourceGroupName
+  location: Location
+  tags: Tags
 }
 
-// Workspace VNet 設定
-var WorkspaceVNetConfig = {
-  name: '${ResourcePrefix}-vnet-workspace'
-  addressSpace: '10.1.0.0/16'
-  subnets: [
-    {
-      name: 'private-endpoint-subnet'
-      addressPrefix: '10.1.0.0/24'
-    }
-  ]
-}
-
-// Spoke1 VNet 設定
-var Spoke1VNetConfig = {
-  name: '${ResourcePrefix}-vnet-spoke1'
-  addressSpace: '192.168.0.0/16'
-  subnets: [
-    {
-      name: 'AppSubnet'
-      addressPrefix: '192.168.0.0/24'
-    }
-    {
-      name: 'DBSubnet'
-      addressPrefix: '192.168.1.0/24'
-    }
-  ]
-}
-
-// Spoke2 VNet 設定
-var Spoke2VNetConfig = {
-  name: '${ResourcePrefix}-vnet-spoke2'
-  addressSpace: '172.16.0.0/16'
-  subnets: [
-    {
-      name: 'VMSubnet'
-      addressPrefix: '172.16.0.0/24'
-    }
-  ]
-}
-
-// Storage Account 設定
-var StorageAccountConfig = {
-  name: replace('${ResourcePrefix}st', '-', '')
-  skuName: Environment == 'prod' ? 'Standard_GRS' : 'Standard_LRS'
-}
-
-// Log Analytics 設定
-var LogAnalyticsConfig = {
-  name: '${ResourcePrefix}-law'
-  retentionInDays: 90
-}
-
-// Key Vault 設定
-var KeyVaultConfig = {
-  name: '${ResourcePrefix}-kv'
-}
-
-// Recovery Services Vault 設定
-var BackupVaultConfig = {
-  name: '${ResourcePrefix}-rsv'
-}
-
-// Azure Firewall のプライベート IP
-var AzureFirewallPrivateIp = '10.0.1.4'
-
-// ========================================
-// NSG リソース
-// ========================================
-
-// AppSubnet 用 NSG
-module nsgAppSubnet './modules/nsg.bicep' = {
-  name: 'deploy-nsg-app-subnet'
+module logAnalyticsModule './modules/loganalytics.bicep' = {
+  scope: resourceGroup
+  name: 'logAnalyticsDeployment'
   params: {
-    location: Location
-    nsgName: '${ResourcePrefix}-nsg-app'
-    tags: CommonTags
-    securityRules: [
-      {
-        name: 'AllowHttpsInbound'
-        properties: {
-          priority: 100
-          direction: 'Inbound'
-          access: 'Allow'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '443'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-        }
-      }
-    ]
+    Location: Location
+    Environment: Environment
+    ProjectName: ProjectName
+    Tags: Tags
+    LogRetentionDays: LogRetentionDays
   }
 }
 
-// DBSubnet 用 NSG
-module nsgDbSubnet './modules/nsg.bicep' = {
-  name: 'deploy-nsg-db-subnet'
+module storageAccountModule './modules/storageaccount.bicep' = {
+  scope: resourceGroup
+  name: 'storageAccountDeployment'
   params: {
-    location: Location
-    nsgName: '${ResourcePrefix}-nsg-db'
-    tags: CommonTags
-    securityRules: [
-      {
-        name: 'AllowSqlFromApp'
-        properties: {
-          priority: 100
-          direction: 'Inbound'
-          access: 'Allow'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '1433'
-          sourceAddressPrefix: Spoke1VNetConfig.subnets[0].addressPrefix
-          destinationAddressPrefix: '*'
-        }
-      }
-    ]
+    Location: Location
+    Environment: Environment
+    ProjectName: ProjectName
+    Tags: Tags
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
   }
 }
 
-// VMSubnet 用 NSG
-module nsgVmSubnet './modules/nsg.bicep' = {
-  name: 'deploy-nsg-vm-subnet'
+module nsgVmSubnetModule './modules/nsg.bicep' = {
+  scope: resourceGroup
+  name: 'nsgVmSubnetDeployment'
   params: {
-    location: Location
-    nsgName: '${ResourcePrefix}-nsg-vm'
-    tags: CommonTags
-    securityRules: [
+    Location: Location
+    NsgName: 'nsg-vmsubnet-${Environment}-${Location}'
+    SecurityRules: [
       {
-        name: 'AllowBastionInbound'
+        name: 'AllowBastionSSH'
         properties: {
-          priority: 100
-          direction: 'Inbound'
-          access: 'Allow'
           protocol: 'Tcp'
           sourcePortRange: '*'
-          destinationPortRanges: [
-            '22'
-            '3389'
-          ]
-          sourceAddressPrefix: HubVNetConfig.subnets[2].addressPrefix
+          destinationPortRange: '22'
+          sourceAddressPrefix: '10.0.2.0/26'
           destinationAddressPrefix: '*'
-        }
-      }
-    ]
-  }
-}
-
-// Private Endpoint Subnet 用 NSG
-module nsgPeSubnet './modules/nsg.bicep' = {
-  name: 'deploy-nsg-pe-subnet'
-  params: {
-    location: Location
-    nsgName: '${ResourcePrefix}-nsg-pe'
-    tags: CommonTags
-    securityRules: [
-      {
-        name: 'AllowPrivateEndpointInbound'
-        properties: {
+          access: 'Allow'
           priority: 100
           direction: 'Inbound'
+        }
+      }
+      {
+        name: 'AllowBastionRDP'
+        properties: {
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: '3389'
+          sourceAddressPrefix: '10.0.2.0/26'
+          destinationAddressPrefix: '*'
           access: 'Allow'
+          priority: 110
+          direction: 'Inbound'
+        }
+      }
+      {
+        name: 'DenyAllInbound'
+        properties: {
           protocol: '*'
           sourcePortRange: '*'
           destinationPortRange: '*'
-          sourceAddressPrefix: 'VirtualNetwork'
+          sourceAddressPrefix: '*'
           destinationAddressPrefix: '*'
+          access: 'Deny'
+          priority: 4096
+          direction: 'Inbound'
         }
       }
     ]
+    Tags: Tags
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+    StorageAccountId: storageAccountModule.outputs.StorageAccountId
   }
 }
 
-// ========================================
-// VNet リソース
-// ========================================
-
-// Hub VNet
-module hubVNet './modules/vnet.bicep' = {
-  name: 'deploy-hub-vnet'
+module routeTableSpoke1Module './modules/routetable.bicep' = {
+  scope: resourceGroup
+  name: 'routeTableSpoke1Deployment'
   params: {
-    VNetName: HubVNetConfig.name
-    VNetAddressSpace: HubVNetConfig.addressSpace
     Location: Location
-    Subnets: HubVNetConfig.subnets
-    Tags: CommonTags
-  }
-}
-
-// Workspace VNet
-module workspaceVNet './modules/vnet.bicep' = {
-  name: 'deploy-workspace-vnet'
-  params: {
-    VNetName: WorkspaceVNetConfig.name
-    VNetAddressSpace: WorkspaceVNetConfig.addressSpace
-    Location: Location
-    Subnets: WorkspaceVNetConfig.subnets
-    Tags: CommonTags
-  }
-}
-
-// Spoke1 VNet
-module spoke1VNet './modules/vnet.bicep' = {
-  name: 'deploy-spoke1-vnet'
-  params: {
-    VNetName: Spoke1VNetConfig.name
-    VNetAddressSpace: Spoke1VNetConfig.addressSpace
-    Location: Location
-    Subnets: Spoke1VNetConfig.subnets
-    Tags: CommonTags
-  }
-}
-
-// Spoke2 VNet
-module spoke2VNet './modules/vnet.bicep' = {
-  name: 'deploy-spoke2-vnet'
-  params: {
-    VNetName: Spoke2VNetConfig.name
-    VNetAddressSpace: Spoke2VNetConfig.addressSpace
-    Location: Location
-    Subnets: Spoke2VNetConfig.subnets
-    Tags: CommonTags
-  }
-}
-
-// ========================================
-// VNet Peering
-// ========================================
-
-module vnetPeering './modules/vnet-peering.bicep' = {
-  name: 'deploy-vnet-peering'
-  params: {
-    HubVNetName: hubVNet.outputs.VNetName
-    HubVNetId: hubVNet.outputs.VNetId
-    SpokeVNets: [
+    RouteTableName: 'rt-spoke1-${Environment}-${Location}'
+    Routes: [
       {
-        name: workspaceVNet.outputs.VNetName
-        id: workspaceVNet.outputs.VNetId
+        name: 'route-to-azfw'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: azureFirewallModule.outputs.FirewallPrivateIp
+        }
+      }
+    ]
+    Tags: Tags
+  }
+}
+
+module routeTableSpoke2Module './modules/routetable.bicep' = {
+  scope: resourceGroup
+  name: 'routeTableSpoke2Deployment'
+  params: {
+    Location: Location
+    RouteTableName: 'rt-spoke2-${Environment}-${Location}'
+    Routes: [
+      {
+        name: 'route-to-azfw'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: azureFirewallModule.outputs.FirewallPrivateIp
+        }
+      }
+    ]
+    Tags: Tags
+  }
+}
+
+module hubVnetModule './modules/vnet.bicep' = {
+  scope: resourceGroup
+  name: 'hubVnetDeployment'
+  params: {
+    Location: Location
+    VnetName: 'vnet-hub-${Environment}-${Location}'
+    AddressPrefix: '10.0.0.0/16'
+    Subnets: [
+      {
+        name: 'GatewaySubnet'
+        addressPrefix: '10.0.0.0/24'
+        networkSecurityGroupId: null
+        routeTableId: null
       }
       {
-        name: spoke1VNet.outputs.VNetName
-        id: spoke1VNet.outputs.VNetId
+        name: 'AzureFirewallSubnet'
+        addressPrefix: '10.0.1.0/26'
+        networkSecurityGroupId: null
+        routeTableId: null
       }
       {
-        name: spoke2VNet.outputs.VNetName
-        id: spoke2VNet.outputs.VNetId
+        name: 'AzureBastionSubnet'
+        addressPrefix: '10.0.2.0/26'
+        networkSecurityGroupId: null
+        routeTableId: null
       }
+    ]
+    Tags: Tags
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+    StorageAccountId: storageAccountModule.outputs.StorageAccountId
+  }
+}
+
+module workspaceVnetModule './modules/vnet.bicep' = {
+  scope: resourceGroup
+  name: 'workspaceVnetDeployment'
+  params: {
+    Location: Location
+    VnetName: 'vnet-workspace-${Environment}-${Location}'
+    AddressPrefix: '10.1.0.0/16'
+    Subnets: [
+      {
+        name: 'private-endpoint-subnet'
+        addressPrefix: '10.1.0.0/24'
+        networkSecurityGroupId: null
+        routeTableId: null
+        privateEndpointNetworkPolicies: 'Disabled'
+      }
+    ]
+    Tags: Tags
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+    StorageAccountId: storageAccountModule.outputs.StorageAccountId
+  }
+}
+
+module spoke1VnetModule './modules/vnet.bicep' = {
+  scope: resourceGroup
+  name: 'spoke1VnetDeployment'
+  params: {
+    Location: Location
+    VnetName: 'vnet-spoke1-${Environment}-${Location}'
+    AddressPrefix: '192.168.0.0/16'
+    Subnets: [
+      {
+        name: 'AppSubnet'
+        addressPrefix: '192.168.0.0/24'
+        networkSecurityGroupId: null
+        routeTableId: routeTableSpoke1Module.outputs.RouteTableId
+      }
+      {
+        name: 'DBSubnet'
+        addressPrefix: '192.168.1.0/24'
+        networkSecurityGroupId: null
+        routeTableId: routeTableSpoke1Module.outputs.RouteTableId
+      }
+    ]
+    Tags: Tags
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+    StorageAccountId: storageAccountModule.outputs.StorageAccountId
+  }
+}
+
+module spoke2VnetModule './modules/vnet.bicep' = {
+  scope: resourceGroup
+  name: 'spoke2VnetDeployment'
+  params: {
+    Location: Location
+    VnetName: 'vnet-spoke2-${Environment}-${Location}'
+    AddressPrefix: '172.16.0.0/16'
+    Subnets: [
+      {
+        name: 'VMSubnet'
+        addressPrefix: '172.16.0.0/24'
+        networkSecurityGroupId: nsgVmSubnetModule.outputs.NsgId
+        routeTableId: routeTableSpoke2Module.outputs.RouteTableId
+      }
+    ]
+    Tags: Tags
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+    StorageAccountId: storageAccountModule.outputs.StorageAccountId
+  }
+}
+
+module azureFirewallModule './modules/azfw.bicep' = {
+  scope: resourceGroup
+  name: 'azureFirewallDeployment'
+  params: {
+    Location: Location
+    FirewallName: 'azfw-${Environment}-${Location}'
+    SubnetId: hubVnetModule.outputs.SubnetIds[1]
+    Tags: Tags
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+  }
+}
+
+module bastionModule './modules/bastion.bicep' = {
+  scope: resourceGroup
+  name: 'bastionDeployment'
+  params: {
+    Location: Location
+    BastionName: 'bas-${Environment}-${Location}'
+    SubnetId: hubVnetModule.outputs.SubnetIds[2]
+    Tags: Tags
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+  }
+}
+
+module hubToSpoke1PeeringModule './modules/vnet-peering.bicep' = {
+  scope: resourceGroup
+  name: 'hubToSpoke1PeeringDeployment'
+  params: {
+    LocalVnetName: hubVnetModule.outputs.VnetName
+    RemoteVnetName: spoke1VnetModule.outputs.VnetName
+    RemoteVnetId: spoke1VnetModule.outputs.VnetId
+    AllowForwardedTraffic: true
+    AllowGatewayTransit: true
+    UseRemoteGateways: false
+  }
+}
+
+module spoke1ToHubPeeringModule './modules/vnet-peering.bicep' = {
+  scope: resourceGroup
+  name: 'spoke1ToHubPeeringDeployment'
+  params: {
+    LocalVnetName: spoke1VnetModule.outputs.VnetName
+    RemoteVnetName: hubVnetModule.outputs.VnetName
+    RemoteVnetId: hubVnetModule.outputs.VnetId
+    AllowForwardedTraffic: true
+    AllowGatewayTransit: false
+    UseRemoteGateways: false
+  }
+}
+
+module hubToSpoke2PeeringModule './modules/vnet-peering.bicep' = {
+  scope: resourceGroup
+  name: 'hubToSpoke2PeeringDeployment'
+  params: {
+    LocalVnetName: hubVnetModule.outputs.VnetName
+    RemoteVnetName: spoke2VnetModule.outputs.VnetName
+    RemoteVnetId: spoke2VnetModule.outputs.VnetId
+    AllowForwardedTraffic: true
+    AllowGatewayTransit: true
+    UseRemoteGateways: false
+  }
+}
+
+module spoke2ToHubPeeringModule './modules/vnet-peering.bicep' = {
+  scope: resourceGroup
+  name: 'spoke2ToHubPeeringDeployment'
+  params: {
+    LocalVnetName: spoke2VnetModule.outputs.VnetName
+    RemoteVnetName: hubVnetModule.outputs.VnetName
+    RemoteVnetId: hubVnetModule.outputs.VnetId
+    AllowForwardedTraffic: true
+    AllowGatewayTransit: false
+    UseRemoteGateways: false
+  }
+}
+
+module keyVaultModule './modules/keyvault.bicep' = {
+  scope: resourceGroup
+  name: 'keyVaultDeployment'
+  params: {
+    Location: Location
+    KeyVaultName: 'kv-${ProjectName}-${Environment}'
+    TenantId: subscription().tenantId
+    Tags: Tags
+    VmAdminUsername: 'azureuser01'
+    VmAdminPassword: 'p@ssw0rd1234!'
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+  }
+}
+
+module managedIdentityModule './modules/u-managedid.bicep' = {
+  scope: resourceGroup
+  name: 'managedIdentityDeployment'
+  params: {
+    Location: Location
+    IdentityName: 'id-${ProjectName}-${Environment}-${Location}'
+    Tags: Tags
+  }
+}
+
+module networkWatcherModule './modules/nwatcher.bicep' = {
+  scope: resourceGroup
+  name: 'networkWatcherDeployment'
+  params: {
+    Location: Location
+    NetworkWatcherName: 'nw-${Environment}-${Location}'
+    Tags: Tags
+  }
+}
+
+module vmModule './modules/vm.bicep' = {
+  scope: resourceGroup
+  name: 'vmDeployment'
+  params: {
+    Location: Location
+    VmNamePrefix: 'vm-${Environment}'
+    VmSize: 'Standard_D4s_v3'
+    AdminUsername: 'azureuser01'
+    AdminPassword: 'p@ssw0rd1234!'
+    SubnetId: spoke2VnetModule.outputs.SubnetIds[0]
+    OsImagePublisher: 'Canonical'
+    OsImageOffer: '0001-com-ubuntu-server-focal'
+    OsImageSku: '20_04-lts-gen2'
+    OsImageVersion: 'latest'
+    InstanceCount: 2
+    Tags: Tags
+    ManagedIdentityId: managedIdentityModule.outputs.IdentityId
+  }
+}
+
+module backupModule './modules/backup.bicep' = {
+  scope: resourceGroup
+  name: 'backupDeployment'
+  params: {
+    Location: Location
+    VaultName: 'rsv-${Environment}-${Location}'
+    BackupPolicyName: 'policy-daily-${Environment}'
+    RetentionDays: BackupRetentionDays
+    Tags: Tags
+    VmIds: vmModule.outputs.VmIds
+  }
+}
+
+module policyModule './modules/policy.bicep' = {
+  scope: subscription()
+  name: 'policyDeployment'
+  params: {
+    Environment: Environment
+    ProjectName: ProjectName
+    AllowedLocations: [
+      'japaneast'
+      'japanwest'
     ]
   }
 }
 
-// ========================================
-// Route Table
-// ========================================
-
-// Spoke1 Route Table
-module routeTableSpoke1 './modules/routetable.bicep' = {
-  name: 'deploy-routetable-spoke1'
+module rbacModule './modules/rbac.bicep' = {
+  scope: resourceGroup
+  name: 'rbacDeployment'
   params: {
-    location: Location
-    routeTableName: '${ResourcePrefix}-rt-spoke1'
-    azureFirewallPrivateIp: AzureFirewallPrivateIp
-    tags: CommonTags
+    PrincipalId: managedIdentityModule.outputs.PrincipalId
   }
 }
 
-// Spoke2 Route Table
-module routeTableSpoke2 './modules/routetable.bicep' = {
-  name: 'deploy-routetable-spoke2'
+module alertRuleModule './modules/alertrule.bicep' = {
+  scope: resourceGroup
+  name: 'alertRuleDeployment'
   params: {
-    location: Location
-    routeTableName: '${ResourcePrefix}-rt-spoke2'
-    azureFirewallPrivateIp: AzureFirewallPrivateIp
-    tags: CommonTags
+    ActionGroupName: 'ag-${Environment}-${Location}'
+    AdminEmail: AdminEmail
+    VmIds: vmModule.outputs.VmIds
+    Tags: Tags
   }
 }
 
-// ========================================
-// Log Analytics Workspace
-// ========================================
-
-module logAnalytics './modules/loganalytics.bicep' = {
-  name: 'deploy-log-analytics'
+module nsgFlowLogModule './modules/nsgflowlog.bicep' = {
+  scope: resourceGroup
+  name: 'nsgFlowLogDeployment'
   params: {
     Location: Location
-    WorkspaceName: LogAnalyticsConfig.name
-    RetentionInDays: LogAnalyticsConfig.retentionInDays
-    Tags: CommonTags
+    NetworkWatcherName: networkWatcherModule.outputs.NetworkWatcherName
+    NsgId: nsgVmSubnetModule.outputs.NsgId
+    NsgName: nsgVmSubnetModule.outputs.NsgName
+    StorageAccountId: storageAccountModule.outputs.StorageAccountId
+    LogAnalyticsWorkspaceId: logAnalyticsModule.outputs.WorkspaceId
+    Tags: Tags
   }
 }
 
-// ========================================
-// Storage Account
-// ========================================
+module amplsModule './modules/ampls.bicep' = {
+  scope: resourceGroup
+  name: 'amplsDeployment'
+  params: {
+    PrivateLinkScopeName: 'ampls-${Environment}-${Location}'
+    Location: 'global'
+    Tags: Tags
+  }
+}
 
-module storageAccount './modules/storageaccount.bicep' = {
-  name: 'deploy-storage-account'
+module amplsScopedResourceModule './modules/amplsscopedresource.bicep' = {
+  scope: resourceGroup
+  name: 'amplsScopedResourceDeployment'
+  params: {
+    PrivateLinkScopeName: 'ampls-${Environment}-${Location}'
+    ScopedResourceName: logAnalyticsModule.outputs.WorkspaceName
+    LinkedResourceId: logAnalyticsModule.outputs.WorkspaceId
+  }
+}
+
+module privateEndpointLawModule './modules/privateendpoint.bicep' = {
+  scope: resourceGroup
+  name: 'privateEndpointLawDeployment'
   params: {
     Location: Location
-    StorageAccountName: StorageAccountConfig.name
-    SkuName: StorageAccountConfig.skuName
-    WorkspaceVNetId: workspaceVNet.outputs.VNetId
-    PrivateEndpointSubnetId: workspaceVNet.outputs.Subnets[0].id
-    Tags: CommonTags
+    PrivateEndpointName: 'pe-law-${Environment}-${Location}'
+    SubnetId: workspaceVnetModule.outputs.SubnetIds[0]
+    PrivateLinkServiceId: amplsModule.outputs.PrivateLinkScopeId
+    GroupIds: [
+      'azuremonitor'
+    ]
+    Tags: Tags
   }
 }
 
-// ========================================
-// Key Vault
-// ========================================
-
-module keyVault './modules/keyvault.bicep' = {
-  name: 'deploy-key-vault'
+module privateEndpointStorageModule './modules/privateendpoint.bicep' = {
+  scope: resourceGroup
+  name: 'privateEndpointStorageDeployment'
   params: {
-    location: Location
-    keyVaultName: KeyVaultConfig.name
-    tenantId: TenantId
-    tags: CommonTags
-    enablePublicNetworkAccess: true
-    adminPassword: VmAdminPassword
+    Location: Location
+    PrivateEndpointName: 'pe-storage-${Environment}-${Location}'
+    SubnetId: workspaceVnetModule.outputs.SubnetIds[0]
+    PrivateLinkServiceId: storageAccountModule.outputs.StorageAccountId
+    GroupIds: [
+      'blob'
+    ]
+    Tags: Tags
   }
 }
-
-// ========================================
-// Recovery Services Vault
-// ========================================
-
-module backupVault './modules/backup.bicep' = {
-  name: 'deploy-backup-vault'
-  params: {
-    location: Location
-    vaultName: BackupVaultConfig.name
-    tags: CommonTags
-    retentionDays: 30
-  }
-}
-
-// ========================================
-// Virtual Machines (Spoke1)
-// ========================================
-
-module vmSpoke1Zone1 './modules/vm.bicep' = {
-  name: 'deploy-vm-spoke1-zone1'
-  params: {
-    location: Location
-    vmName: '${ResourcePrefix}-vm-spoke1-z1'
-    vmSize: 'Standard_D4s_v3'
-    availabilityZone: '1'
-    subnetId: spoke1VNet.outputs.Subnets[0].id
-    adminUsername: 'azureuser01'
-    adminPassword: VmAdminPassword
-    tags: CommonTags
-  }
-  dependsOn: [
-    keyVault
-  ]
-}
-
-module vmSpoke1Zone2 './modules/vm.bicep' = {
-  name: 'deploy-vm-spoke1-zone2'
-  params: {
-    location: Location
-    vmName: '${ResourcePrefix}-vm-spoke1-z2'
-    vmSize: 'Standard_D4s_v3'
-    availabilityZone: '2'
-    subnetId: spoke1VNet.outputs.Subnets[0].id
-    adminUsername: 'azureuser01'
-    adminPassword: VmAdminPassword
-    tags: CommonTags
-  }
-  dependsOn: [
-    keyVault
-  ]
-}
-
-// ========================================
-// Virtual Machines (Spoke2)
-// ========================================
-
-module vmSpoke2Zone1 './modules/vm.bicep' = {
-  name: 'deploy-vm-spoke2-zone1'
-  params: {
-    location: Location
-    vmName: '${ResourcePrefix}-vm-spoke2-z1'
-    vmSize: 'Standard_D4s_v3'
-    availabilityZone: '1'
-    subnetId: spoke2VNet.outputs.Subnets[0].id
-    adminUsername: 'azureuser01'
-    adminPassword: VmAdminPassword
-    tags: CommonTags
-  }
-  dependsOn: [
-    keyVault
-  ]
-}
-
-module vmSpoke2Zone2 './modules/vm.bicep' = {
-  name: 'deploy-vm-spoke2-zone2'
-  params: {
-    location: Location
-    vmName: '${ResourcePrefix}-vm-spoke2-z2'
-    vmSize: 'Standard_D4s_v3'
-    availabilityZone: '2'
-    subnetId: spoke2VNet.outputs.Subnets[0].id
-    adminUsername: 'azureuser01'
-    adminPassword: VmAdminPassword
-    tags: CommonTags
-  }
-  dependsOn: [
-    keyVault
-  ]
-}
-
-// ========================================
-// 出力
-// ========================================
-
-@description('Hub VNet リソース ID')
-output HubVNetId string = hubVNet.outputs.VNetId
-
-@description('Workspace VNet リソース ID')
-output WorkspaceVNetId string = workspaceVNet.outputs.VNetId
-
-@description('Spoke1 VNet リソース ID')
-output Spoke1VNetId string = spoke1VNet.outputs.VNetId
-
-@description('Spoke2 VNet リソース ID')
-output Spoke2VNetId string = spoke2VNet.outputs.VNetId
-
-@description('Log Analytics Workspace ID')
-output LogAnalyticsWorkspaceId string = logAnalytics.outputs.WorkspaceId
-
-@description('Storage Account 名')
-output StorageAccountName string = storageAccount.outputs.StorageAccountName
-
-@description('Key Vault 名')
-output KeyVaultName string = keyVault.outputs.keyVaultName
-
-@description('Backup Vault 名')
-output BackupVaultName string = backupVault.outputs.vaultName
-
-@description('VM Spoke1 Zone1 リソース ID')
-output VmSpoke1Zone1Id string = vmSpoke1Zone1.outputs.vmId
-
-@description('VM Spoke1 Zone2 リソース ID')
-output VmSpoke1Zone2Id string = vmSpoke1Zone2.outputs.vmId
-
-@description('VM Spoke2 Zone1 リソース ID')
-output VmSpoke2Zone1Id string = vmSpoke2Zone1.outputs.vmId
-
-@description('VM Spoke2 Zone2 リソース ID')
-output VmSpoke2Zone2Id string = vmSpoke2Zone2.outputs.vmId

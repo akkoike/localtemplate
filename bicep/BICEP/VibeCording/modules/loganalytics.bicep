@@ -1,8 +1,10 @@
-// Log Analytics Workspace module
 param Location string
-param WorkspaceName string
-param RetentionInDays int = 90
-param Tags object = {}
+param Environment string
+param ProjectName string
+param Tags object
+param LogRetentionDays int
+
+var WorkspaceName = 'law-${ProjectName}-${Environment}-${Location}'
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: WorkspaceName
@@ -12,15 +14,11 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09
     sku: {
       name: 'PerGB2018'
     }
-    retentionInDays: RetentionInDays
-    publicNetworkAccessForIngestion: 'Enabled'
-    publicNetworkAccessForQuery: 'Enabled'
-    features: {
-      enableLogAccessUsingOnlyResourcePermissions: true
-    }
+    retentionInDays: LogRetentionDays
+    publicNetworkAccessForIngestion: 'Disabled'
+    publicNetworkAccessForQuery: 'Disabled'
   }
 }
 
 output WorkspaceId string = logAnalyticsWorkspace.id
 output WorkspaceName string = logAnalyticsWorkspace.name
-output WorkspaceCustomerId string = logAnalyticsWorkspace.properties.customerId

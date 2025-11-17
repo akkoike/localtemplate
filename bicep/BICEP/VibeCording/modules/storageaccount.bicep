@@ -1,34 +1,33 @@
-// Storage Account with Private Endpoint module
 param Location string
-param StorageAccountName string
-param SkuName string = 'Standard_LRS'
-param WorkspaceVNetId string
-param PrivateEndpointSubnetId string
-param Tags object = {}
+param Environment string
+param ProjectName string
+param Tags object
+param LogAnalyticsWorkspaceId string = ''
 
-var privateEndpointName = '${StorageAccountName}-pe'
-var privateDnsZoneName = 'privatelink.blob.${environment().suffixes.storage}'
-var pvtEndpointDnsGroupName = '${privateEndpointName}/default'
+var StorageAccountName = 'st${toLower(replace(ProjectName, '-', ''))}${toLower(Environment)}${uniqueString(resourceGroup().id)}'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
-  name: StorageAccountName
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: take(StorageAccountName, 24)
   location: Location
   tags: Tags
   sku: {
-    name: SkuName
+    name: 'Standard_LRS'
   }
   kind: 'StorageV2'
   properties: {
     minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
     allowBlobPublicAccess: false
     networkAcls: {
-      bypass: 'AzureServices'
       defaultAction: 'Deny'
+      bypass: 'AzureServices'
     }
-    supportsHttpsTrafficOnly: true
     encryption: {
       services: {
         blob: {
+          enabled: true
+        }
+        file: {
           enabled: true
         }
       }
@@ -37,63 +36,33 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
 }
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-09-01' = {
-  name: privateEndpointName
-  location: Location
-  tags: Tags
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
+  parent: storageAccount
+  name: 'default'
+  properties: {}
+}
+
+resource diagnosticsContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
+  parent: blobService
+  name: 'diagnostics'
   properties: {
-    subnet: {
-      id: PrivateEndpointSubnetId
-    }
-    privateLinkServiceConnections: [
+    publicAccess: 'None'
+  }
+}
+
+resource storageDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = if (!empty(LogAnalyticsWorkspaceId)) {
+  scope: storageAccount
+  name: 'diag-${storageAccount.name}'
+  properties: {
+    workspaceId: LogAnalyticsWorkspaceId
+    metrics: [
       {
-        name: privateEndpointName
-        properties: {
-          privateLinkServiceId: storageAccount.id
-          groupIds: [
-            'blob'
-          ]
-        }
+        category: 'Transaction'
+        enabled: true
       }
     ]
   }
-}
-
-resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: privateDnsZoneName
-  location: 'global'
-  tags: Tags
-}
-
-resource privateDnsZoneVNetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
-  parent: privateDnsZone
-  name: '${StorageAccountName}-vnet-link'
-  location: 'global'
-  properties: {
-    registrationEnabled: false
-    virtualNetwork: {
-      id: WorkspaceVNetId
-    }
-  }
-}
-
-resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-09-01' = {
-  name: pvtEndpointDnsGroupName
-  properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: 'config1'
-        properties: {
-          privateDnsZoneId: privateDnsZone.id
-        }
-      }
-    ]
-  }
-  dependsOn: [
-    privateEndpoint
-  ]
 }
 
 output StorageAccountId string = storageAccount.id
 output StorageAccountName string = storageAccount.name
-output PrivateEndpointId string = privateEndpoint.id

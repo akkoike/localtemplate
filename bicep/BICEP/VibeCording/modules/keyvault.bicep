@@ -1,52 +1,71 @@
-// Key Vault module
-param location string
-param keyVaultName string
-param tenantId string
-param tags object
-param enablePublicNetworkAccess bool = false
-param adminPassword string
+param Location string
+param KeyVaultName string
+param TenantId string
+param Tags object
+param VmAdminUsername string
+@secure()
+param VmAdminPassword string
+param LogAnalyticsWorkspaceId string
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: keyVaultName
-  location: location
-  tags: tags
+  name: KeyVaultName
+  location: Location
+  tags: Tags
   properties: {
     sku: {
       family: 'A'
       name: 'standard'
     }
-    tenantId: tenantId
+    tenantId: TenantId
+    enabledForDeployment: true
+    enabledForTemplateDeployment: true
+    enabledForDiskEncryption: true
     enableRbacAuthorization: true
     enableSoftDelete: true
     softDeleteRetentionInDays: 90
-    enablePurgeProtection: true
-    publicNetworkAccess: enablePublicNetworkAccess ? 'Enabled' : 'Disabled'
     networkAcls: {
+      defaultAction: 'Deny'
       bypass: 'AzureServices'
-      defaultAction: enablePublicNetworkAccess ? 'Allow' : 'Deny'
     }
+    publicNetworkAccess: 'Disabled'
   }
 }
 
-resource secretUsername 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource usernameSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
   name: 'vm-admin-username'
   properties: {
-    value: 'azureuser01'
-    contentType: 'text/plain'
+    value: VmAdminUsername
   }
 }
 
-resource secretPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+resource passwordSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
   name: 'vm-admin-password'
   properties: {
-    value: adminPassword
-    contentType: 'text/plain'
+    value: VmAdminPassword
   }
 }
 
-output keyVaultId string = keyVault.id
-output keyVaultName string = keyVault.name
-output keyVaultUri string = keyVault.properties.vaultUri
-output adminUsernameSecretId string = secretUsername.id
+resource keyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: keyVault
+  name: 'diag-${KeyVaultName}'
+  properties: {
+    workspaceId: LogAnalyticsWorkspaceId
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+      }
+    ]
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+      }
+    ]
+  }
+}
+
+output KeyVaultId string = keyVault.id
+output KeyVaultName string = keyVault.name

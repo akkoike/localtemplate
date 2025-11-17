@@ -1,35 +1,26 @@
-// VNet Peering module
-param HubVNetName string
-param HubVNetId string
-param SpokeVNets array
+param LocalVnetName string
+param RemoteVnetName string
+param RemoteVnetId string
+param AllowForwardedTraffic bool
+param AllowGatewayTransit bool
+param UseRemoteGateways bool
 
-resource HubVNet 'Microsoft.Network/virtualNetworks@2023-09-01' existing = {
-  name: HubVNetName
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' existing = {
+  name: LocalVnetName
 }
 
-resource HubToSpokeVNetPeering 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2023-09-01' = [for spoke in SpokeVNets: {
-  parent: HubVNet
-  name: 'peer-${HubVNetName}-to-${spoke.name}'
+resource peeringToRemote 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2023-11-01' = {
+  parent: virtualNetwork
+  name: '${LocalVnetName}-to-${RemoteVnetName}'
   properties: {
     remoteVirtualNetwork: {
-      id: spoke.id
+      id: RemoteVnetId
     }
     allowVirtualNetworkAccess: true
-    allowForwardedTraffic: true
-    allowGatewayTransit: true
-    useRemoteGateways: false
+    allowForwardedTraffic: AllowForwardedTraffic
+    allowGatewayTransit: AllowGatewayTransit
+    useRemoteGateways: UseRemoteGateways
   }
-}]
+}
 
-resource SpokeToHubVNetPeering 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2023-09-01' = [for spoke in SpokeVNets: {
-  name: '${spoke.name}/peer-${spoke.name}-to-${HubVNetName}'
-  properties: {
-    remoteVirtualNetwork: {
-      id: HubVNetId
-    }
-    allowVirtualNetworkAccess: true
-    allowForwardedTraffic: true
-    allowGatewayTransit: false
-    useRemoteGateways: false
-  }
-}]
+output PeeringId string = peeringToRemote.id

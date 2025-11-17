@@ -1,7 +1,9 @@
 using './main-standard.bicep'
 
-param Environment = 'prod'
 param Location = 'japaneast'
-param ProjectName = 'azstd'
+param Environment = 'prod'
+param ProjectName = 'azurestandard'
 param AdminEmail = 'akkoike@microsoft.com'
-param VmAdminPassword = readEnvironmentVariable('VM_ADMIN_PASSWORD', 'P@ssw0rd1234!')
+param BackupRetentionDays = 30
+param LogRetentionDays = 90
+// param CostBudgetAmount = 100  // Reserved for future cost budget implementation

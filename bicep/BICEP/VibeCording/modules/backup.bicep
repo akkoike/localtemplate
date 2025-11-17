@@ -1,35 +1,26 @@
-// Backup module
-param location string
-param vaultName string
-param tags object
-param backupPolicyName string = 'DailyBackupPolicy'
-param retentionDays int = 30
+param Location string
+param VaultName string
+param BackupPolicyName string
+param RetentionDays int
+param Tags object
+param VmIds array
 
-resource vault 'Microsoft.RecoveryServices/vaults@2023-04-01' = {
-  name: vaultName
-  location: location
-  tags: tags
+resource recoveryServicesVault 'Microsoft.RecoveryServices/vaults@2024-04-01' = {
+  name: VaultName
+  location: Location
+  tags: Tags
   sku: {
     name: 'RS0'
     tier: 'Standard'
   }
   properties: {
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: 'Disabled'
   }
 }
 
-resource vaultConfig 'Microsoft.RecoveryServices/vaults/backupconfig@2023-04-01' = {
-  parent: vault
-  name: 'vaultconfig'
-  properties: {
-    storageType: 'LocallyRedundant'
-    storageTypeState: 'Locked'
-  }
-}
-
-resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-04-01' = {
-  parent: vault
-  name: backupPolicyName
+resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2024-04-01' = {
+  parent: recoveryServicesVault
+  name: BackupPolicyName
   properties: {
     backupManagementType: 'AzureIaasVM'
     schedulePolicy: {
@@ -38,7 +29,6 @@ resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-04-
       scheduleRunTimes: [
         '2024-01-01T02:00:00Z'
       ]
-      scheduleWeeklyFrequency: 0
     }
     retentionPolicy: {
       retentionPolicyType: 'LongTermRetentionPolicy'
@@ -47,17 +37,23 @@ resource backupPolicy 'Microsoft.RecoveryServices/vaults/backupPolicies@2023-04-
           '2024-01-01T02:00:00Z'
         ]
         retentionDuration: {
-          count: retentionDays
+          count: RetentionDays
           durationType: 'Days'
         }
       }
     }
-    instantRpRetentionRangeInDays: 2
     timeZone: 'Tokyo Standard Time'
   }
 }
 
-output vaultId string = vault.id
-output vaultName string = vault.name
-output backupPolicyName string = backupPolicy.name
-output backupPolicyId string = backupPolicy.id
+resource backupProtectedItem 'Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems@2024-04-01' = [for (vmId, i) in VmIds: {
+  name: '${VaultName}/Azure/iaasvmcontainer;iaasvmcontainerv2;${split(vmId, '/')[4]};${split(vmId, '/')[8]}/vm;iaasvmcontainerv2;${split(vmId, '/')[4]};${split(vmId, '/')[8]}'
+  properties: {
+    protectedItemType: 'Microsoft.Compute/virtualMachines'
+    policyId: backupPolicy.id
+    sourceResourceId: vmId
+  }
+}]
+
+output VaultId string = recoveryServicesVault.id
+output BackupPolicyId string = backupPolicy.id

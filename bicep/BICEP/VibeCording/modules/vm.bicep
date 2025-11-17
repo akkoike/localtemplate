@@ -1,52 +1,65 @@
-// Virtual Machine module
-param location string
-param vmName string
-param vmSize string = 'Standard_D4s_v3'
-param availabilityZone string
-param subnetId string
-param adminUsername string
-param adminPassword string
-param tags object
+param Location string
+param VmNamePrefix string
+param VmSize string
+param AdminUsername string
+@secure()
+param AdminPassword string
+param SubnetId string
+param OsImagePublisher string
+param OsImageOffer string
+param OsImageSku string
+param OsImageVersion string
+param InstanceCount int
+param Tags object
+param ManagedIdentityId string
 
-var nicName = '${vmName}-nic'
+var AvailabilityZones = [
+  '1'
+  '2'
+]
 
-resource nic 'Microsoft.Network/networkInterfaces@2023-09-01' = {
-  name: nicName
-  location: location
-  tags: tags
+resource networkInterface 'Microsoft.Network/networkInterfaces@2023-11-01' = [for i in range(0, InstanceCount): {
+  name: '${VmNamePrefix}-nic-${i + 1}'
+  location: Location
+  tags: Tags
   properties: {
     ipConfigurations: [
       {
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: subnetId
+            id: SubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
         }
       }
     ]
   }
-}
+}]
 
-resource vm 'Microsoft.Compute/virtualMachines@2023-09-01' = {
-  name: vmName
-  location: location
-  zones: [availabilityZone]
-  tags: tags
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-07-01' = [for i in range(0, InstanceCount): {
+  name: '${VmNamePrefix}-${i + 1}'
+  location: Location
+  tags: Tags
+  zones: [
+    AvailabilityZones[i % length(AvailabilityZones)]
+  ]
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${ManagedIdentityId}': {}
+    }
   }
   properties: {
     hardwareProfile: {
-      vmSize: vmSize
+      vmSize: VmSize
     }
     storageProfile: {
       imageReference: {
-        publisher: 'Canonical'
-        offer: '0001-com-ubuntu-server-focal'
-        sku: '20_04-lts-gen2'
-        version: 'latest'
+        publisher: OsImagePublisher
+        offer: OsImageOffer
+        sku: OsImageSku
+        version: OsImageVersion
       }
       osDisk: {
         createOption: 'FromImage'
@@ -57,9 +70,9 @@ resource vm 'Microsoft.Compute/virtualMachines@2023-09-01' = {
       }
     }
     osProfile: {
-      computerName: vmName
-      adminUsername: adminUsername
-      adminPassword: adminPassword
+      computerName: '${VmNamePrefix}-${i + 1}'
+      adminUsername: AdminUsername
+      adminPassword: AdminPassword
       linuxConfiguration: {
         disablePasswordAuthentication: false
         provisionVMAgent: true
@@ -68,25 +81,23 @@ resource vm 'Microsoft.Compute/virtualMachines@2023-09-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: nic.id
+          id: networkInterface[i].id
           properties: {
             primary: true
           }
         }
       ]
     }
-    diagnosticsProfile: {
-      bootDiagnostics: {
-        enabled: true
-      }
-    }
   }
-}
+  dependsOn: [
+    networkInterface
+  ]
+}]
 
-resource amaExtension 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' = {
-  parent: vm
+resource azureMonitorAgentExtension 'Microsoft.Compute/virtualMachines/extensions@2024-07-01' = [for i in range(0, InstanceCount): {
+  parent: virtualMachine[i]
   name: 'AzureMonitorLinuxAgent'
-  location: location
+  location: Location
   properties: {
     publisher: 'Microsoft.Azure.Monitor'
     type: 'AzureMonitorLinuxAgent'
@@ -94,9 +105,7 @@ resource amaExtension 'Microsoft.Compute/virtualMachines/extensions@2023-09-01' 
     autoUpgradeMinorVersion: true
     enableAutomaticUpgrade: true
   }
-}
+}]
 
-output vmId string = vm.id
-output vmName string = vm.name
-output vmIdentityPrincipalId string = vm.identity.principalId
-output vmPrivateIp string = nic.properties.ipConfigurations[0].properties.privateIPAddress
+output VmIds array = [for i in range(0, InstanceCount): virtualMachine[i].id]
+output VmNames array = [for i in range(0, InstanceCount): virtualMachine[i].name]
