@@ -10,4 +10,4 @@ applyTo: "/Users/akkoike/Desktop/TEST/bicep/BICEP/VibeCording/**"
 - @description の説明は使わないでください
 - Azure Verified Modules は使用しないでください
 - **依存性に注意し、必要に応じてdependsOn、parent、scope を使用してください**
-- Output はmoduleの受け渡しにのみ使用し、デプロイ後の情報取得には使用しないでください
+- Output はmodule間の値の受け渡しにのみ使用し、デプロイ後の情報取得には使用しないでください

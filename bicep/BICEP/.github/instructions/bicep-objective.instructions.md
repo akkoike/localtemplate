@@ -62,6 +62,7 @@ VibeCording/
 │   ├── vnet-peering.bicep                  # VNetピアリングモジュール
 │   ├── azfw.bicep                          # Azure Firewall モジュール
 │   ├── bastion.bicep                       # Azure Bastion モジュール
+│   ├── nwatcher.bicep                      # Network Watcher モジュール
 │   ├── storageaccnt.bicep                  # ストレージアカウントモジュール
 │   ├── keyvault.bicep                      # Key Vault モジュール
 │   ├── loganalytics.bicep                  # Log Analytics ワークスペースモジュール
@@ -71,6 +72,7 @@ VibeCording/
 │   ├── policy.bicep                        # Policy モジュール
 │   ├── rbac.bicep                          # RBAC モジュール
 │   ├── u-managedid.bicep                   # User Managed Identity モジュール
+│   ├── alertrule.bicep                     # Alert Rule モジュール
 │   └── diagnostics.bicep                   # Diagnostics モジュール
 └── README.md                               # Readmeファイル
 ```
@@ -83,5 +85,5 @@ VibeCording/
 - .github/instructions/bicep-compute.instructions.md に記載のコンピューティングリソース要件に従ってください。
 # セキュリティ要件
 - .github/instructions/bicep-security.instructions.md に記載のセキュリティ要件に従ってください。
-# AI 要件
-- .github/instructions/bicep-ai.instructions.md に記載のAI要件に従ってください。
+# コスト最適化要件
+- .github/instructions/bicep-costopt.instructions.md に記載のコスト最適化要件に従ってください。
