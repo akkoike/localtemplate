@@ -46,4 +46,4 @@ applyTo: "/Users/akkoike/Desktop/TEST/bicep/BICEP/VibeCording/**"
 - Azure Storage Account との接続は、workspace-VNet の private-endpoint-subnet からアドレス空間を利用して Private Endpoint 経由で接続できるように構成します。
 - Azure Log Analytics Workspace との接続は、workspace-VNet の private-endpoint-subnet からアドレス空間を利用して Azure Monitor Private Link 経由で接続できるように構成します。
 # ルーティング要件
-- 各 Spoke-VNet からインターネットへのアウトバウンド通信は、Hub-VNet にデプロイした Azure Firewall 経由で通信するようにRouteTableを使いデフォルトルートを設定します。
+- 各 Spoke-VNet からのアウトバウンド通信は、Hub-VNet にデプロイした Azure Firewall 経由でデフォルトルートするようにRouteTableを設定します。

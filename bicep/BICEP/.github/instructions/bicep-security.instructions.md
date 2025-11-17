@@ -19,12 +19,15 @@ applyTo: "/Users/akkoike/Desktop/TEST/bicep/BICEP/VibeCording/**"
   - 所有者権限は MOD Administrator に付与します。
 - User Assigned Managed Identity を使用して、Azure リソース間の認証を構成してください。
   - User Assigned Managed Identity には、必要な権限のみを付与し、分類スコープを適切に設定します。
+<!--
+- Multi-Factor Authentication (MFA) を有効にして、Azure ポータルおよびリソースへのアクセスを保護してください。
+-->
 # シークレット管理要件
 - keyvault モジュールを作成し、以下の要件を満たすように構成してください。
-  - Key Vault は、各環境ごとに作成します。(dev, stag, prod)
+  - Key Vault は、Spoke-vNET の VMSubnet からアクセスできるように構成します。
   - Key Vault のアクセス ポリシーには、以下のユーザーとサービス プリンシパルを追加します。
     - MOD Administrator: 全ての権限を付与
-  - Key Vault に保存するシークレットには、各 Virtual Machine の管理者ユーザー名(azureuser01)とパスワード(p@ssw0rd1234!)を含めます。
+  - Key Vault に保存するシークレットには、AzureVMからログインするための管理者ユーザー名(azureuser01)とパスワード(p@ssw0rd1234!)を含めます。
 # ネットワークセキュリティ要件
 - 各 Azure Virtual Network 内のサブネットには、Azure Network Security Group (NSG) を適用し、最小権限の原則に基づいたトラフィックのみ許可するルールを設定してください。
   - VMSubnet には、以下のインバウンドルールを設定してください。
