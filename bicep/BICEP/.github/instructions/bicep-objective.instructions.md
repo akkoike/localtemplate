@@ -61,9 +61,15 @@ VibeCording/
 │   ├── vnet.bicep                          # VNetモジュール
 │   ├── vnet-peering.bicep                  # VNetピアリングモジュール
 │   ├── azfw.bicep                          # Azure Firewall モジュール
+│   ├── ampls.bicep                         # Azure Monitor Private Link Scope モジュール
+│   ├── amplsscopedresource.bicep           # Azure Monitor Private Link Scope Resource モジュール
 │   ├── bastion.bicep                       # Azure Bastion モジュール
 │   ├── nwatcher.bicep                      # Network Watcher モジュール
-│   ├── storageaccnt.bicep                  # ストレージアカウントモジュール
+│   ├── nsg.bicep                           # Network Security Group モジュール
+│   ├── nsgflowlog.bicep                    # Network Security Group Flow Log モジュール
+│   ├── privateendpoint.bicep               # Private Endpoint モジュール
+│   ├── routetable.bicep                    # Route Tableモジュール
+│   ├── storageaccount.bicep                # ストレージアカウントモジュール
 │   ├── keyvault.bicep                      # Key Vault モジュール
 │   ├── loganalytics.bicep                  # Log Analytics ワークスペースモジュール
 │   ├── vm.bicep                            # Virtual Machine モジュール
