@@ -7,10 +7,10 @@ applyTo: "/Users/akkoike/Desktop/TEST/bicep/BICEP/VibeCording/**"
 # コスト最適化要件
 - Azure リソースは、必要なパフォーマンスと可用性を維持しつつ、コスト効率の高い SKU とサイズを選択してデプロイしてください。
   - 例: 仮想マシンは、ワークロードに適した B シリーズや D シリーズなどのコスト効率の高い SKU を使用します。
-[](
+<!--
 - Azure Reserved Instances (RI) を活用して、1年の期間でリソースを予約しコストを削減してください。
 - Azure Hybrid Benefit を利用して、既存の Windows Server および SQL Server ライセンスを活用し、ライセンスコストを削減してください。
-)
+-->
 - 自動スケーリングを構成して、需要に応じてリソースのスケールアップおよびスケールダウンを行い、不要なリソースの稼働を防止してください。
   - 例: Azure Virtual Machine Scale Sets や Azure App Service の自動スケーリング機能を使用します。
 - Azure Cost Management + Billing を使用して、コストの監視と分析を行い、コスト削減の機会を特定してください。
