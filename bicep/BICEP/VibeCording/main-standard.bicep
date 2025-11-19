@@ -6,7 +6,8 @@ param ProjectName string
 param AdminEmail string
 param BackupRetentionDays int
 param LogRetentionDays int
-// param CostBudgetAmount int  // Reserved for future cost budget implementation
+param CostBudgetAmount int
+param BudgetStartDate string = utcNow('yyyy-MM-01')
 
 var ResourceGroupName = 'rg-${ProjectName}-${Environment}-${Location}'
 var Tags = {
@@ -477,5 +478,19 @@ module privateEndpointStorageModule './modules/privateendpoint.bicep' = {
       'blob'
     ]
     Tags: Tags
+  }
+}
+
+module budgetModule './modules/budget.bicep' = {
+  scope: subscription()
+  name: 'budgetDeployment'
+  params: {
+    BudgetName: 'budget-${ProjectName}-${Environment}'
+    Amount: CostBudgetAmount
+    TimeGrain: 'Monthly'
+    StartDate: BudgetStartDate
+    ContactEmails: [
+      AdminEmail
+    ]
   }
 }

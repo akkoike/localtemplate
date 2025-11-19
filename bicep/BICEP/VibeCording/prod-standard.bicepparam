@@ -6,4 +6,4 @@ param ProjectName = 'azurestandard'
 param AdminEmail = 'akkoike@microsoft.com'
 param BackupRetentionDays = 30
 param LogRetentionDays = 90
-// param CostBudgetAmount = 100  // Reserved for future cost budget implementation
+param CostBudgetAmount = 100
